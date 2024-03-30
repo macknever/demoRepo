@@ -16,7 +16,7 @@ spring:
     allow-circular-references: true
 
 datastax.astra:
-  secure-connect-bundle:bundle/scb.zip
+  secure-connect-bundle: bundle/scb.zip
 
 astra.db:
   id: a63b1708-b3bf-4d93-839d-66e8fb25a5f4
