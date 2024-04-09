@@ -17,7 +17,9 @@ spring:
 
 datastax.astra:
   secure-connect-bundle: bundle/scb.zip
-
+  author-data-path: /Users/lawrence_li/Documents/11_Code/02_Java/demoRepo/data-loader-spring/src/main/resources/data/author_data.txt
+  work-data-path: /Users/lawrence_li/Downloads/works_data.txt
+  partial-work-path: data/partial_work_data.txt
 astra.db:
   id: a63b1708-b3bf-4d93-839d-66e8fb25a5f4
   region: us-east1
