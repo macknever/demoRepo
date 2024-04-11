@@ -1,7 +1,6 @@
-package com.lawrence.stream;
+package com.lawrence.corejava.stream;
 
 import java.util.List;
-import java.util.function.Function;
 
 public class StreamExercises {
 
