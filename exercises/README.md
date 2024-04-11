@@ -11,4 +11,4 @@ in Java 17.
 - Immutable data class(all field is final)
 - Not completely immutable if one of the fields is a reference
 
-#### Example: com/lawrence/corejava/objectsandclasses/RecordExample.java
+#### Example: [RecordExample](https://github.com/macknever/demoRepo/blob/master/exercises/src/main/java/com/lawrence/corejava/objectsandclasses/RecordExample.java)
