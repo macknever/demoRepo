@@ -62,6 +62,6 @@ permits JSONString, JSONNumber, JSONBoolean, JSONNull
 For the subclass of a `sealed` class, we can use `non-sealed` to make it be extended arbitrarily. Also, a class which extends a `sealed` class must have 
 `final`, `sealed`, or `non-sealed` modifier.
 
-#### Example: [SealedExample](https://github.com/macknever/demoRepo/blob/master/exercises/src/main/java/com/lawrence/corejava/sealed)
+#### Example: [SealedExample](https://github.com/macknever/demoRepo/blob/master/exercises/src/main/java/com/lawrence/corejava/inheritaqnce/sealed)
 
 
