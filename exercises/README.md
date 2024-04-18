@@ -64,4 +64,22 @@ For the subclass of a `sealed` class, we can use `non-sealed` to make it be exte
 
 #### Example: [SealedExample](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/inheritance/sealed)
 
+## Chapter 6 Interfaces
 
+### Abstract class vs. interface
+Java does not allow multiple inheritance. One class can only extends single class, but can implement multiple interfaces.
+
+### default method.
+Both abstract class and interface can have default method. If ClassA extends ClassB and implement InterfaceB. Both ClassB 
+and InterfaceB has a method getName(), which one ClassA will execute? Principle:
+- Super Class win
+- Interfaces clash
+**HAVE TO MANUALLY RESOLVE IN ANY SITUATION**
+
+#### Example
+
+### Clone
+
+I will not address why we need clone, just make some notes about how clone in Java work.
+A object can make a clone of itself only if the corresponding class implements Cloneable and also override the `clone()`
+method which is belong to class`Object`. Or else,  either only implement Cloneable or only override `clone()` would not work
