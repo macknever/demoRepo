@@ -84,4 +84,4 @@ I will not address why we need clone, just make some notes about how clone in Ja
 A object can make a clone of itself only if the corresponding class implements Cloneable and also override the `clone()`
 method which is belong to class`Object`. Or else,  either only implement Cloneable or only override `clone()` would not work
 
-#### Example
+#### Example [clone](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/interfaces/clone)
