@@ -85,3 +85,8 @@ A object can make a clone of itself only if the corresponding class implements C
 method which is belong to class`Object`. Or else,  either only implement Cloneable or only override `clone()` would not work
 
 #### Example [clone](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/interfaces/clone)
+
+## Chapter 7 Exception logging assert
+
+Those topics and tools are the things I use in my daily job.
+For exception, here is my former notes: https://mire-cayenne-563.notion.site/Exception-d6ea0594a11e4c90b9422f424e278696
