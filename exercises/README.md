@@ -76,7 +76,7 @@ and InterfaceB has a method getName(), which one ClassA will execute? Principle:
 - Interfaces clash
 **HAVE TO MANUALLY RESOLVE IN ANY SITUATION**
 
-#### Example
+#### [Example]([url](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/interfaces/defaultMethodExample))
 
 ### Clone
 
