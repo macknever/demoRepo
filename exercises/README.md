@@ -76,7 +76,7 @@ and InterfaceB has a method getName(), which one ClassA will execute? Principle:
 - Interfaces clash
 **HAVE TO MANUALLY RESOLVE IN ANY SITUATION**
 
-#### [Example](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/interfaces/defaultMethodExample)
+#### Example [DefaultMethod](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/interfaces/defaultMethodExample)
 
 ### Clone
 
@@ -90,3 +90,6 @@ method which is belong to class`Object`. Or else,  either only implement Cloneab
 
 Those topics and tools are the things I use in my daily job.
 For exception, here is my former notes: https://mire-cayenne-563.notion.site/Exception-d6ea0594a11e4c90b9422f424e278696
+
+## Chapter 8 Generic
+
