@@ -92,4 +92,45 @@ Those topics and tools are the things I use in my daily job.
 For exception, here is my former notes: https://mire-cayenne-563.notion.site/Exception-d6ea0594a11e4c90b9422f424e278696
 
 ## Chapter 8 Generic
+If you need a reusable class or an interface, you need generic program.
+
+### Syntax and usage
+
+Although this is not complex, there are something need to be careful.
+
+#### Generic class and method
+```java
+class GenericClass <T> {
+    // This class has already declared T as a generic type, so the method in this class can use T as a known type
+    // ordinary method
+    T foo(T a) {
+        // do sth 
+    }
+    
+    // Still, one can create a generic method inside a generic class
+    // generic method
+    <T> T genericFoo(T t) {
+        // the syntax seems like correct, but it will confuse compiler and the programmer
+        // <T> is not the same T declared in class.
+    }
+    
+    // This is a real generic method
+    // this syntax is correct in both generic and ordinary class
+    <R> R genericFoo(R r) {
+        
+    }
+    
+}
+```
+
+#### Bound / Restriction
+
+If you need the generic type not any arbitrary one, you can bound it.
+
+```java
+class BoundedGenericClass<T extends Comparable> {
+    // maybe you need the generic type you use can be compared
+}
+
+```
 
