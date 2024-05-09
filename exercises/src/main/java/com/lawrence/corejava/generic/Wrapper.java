@@ -1,5 +1,6 @@
 package com.lawrence.corejava.generic;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Wrapper {
@@ -8,5 +9,10 @@ public class Wrapper {
         for (var box : boxes) {
             System.out.println(box.getVolume());
         }
+    }
+
+    //Why this method does not work
+    public void addIntoEnvelop(Employee employee , List<? super Engineer> engineers) {
+        engineers.add(employee);
     }
 }

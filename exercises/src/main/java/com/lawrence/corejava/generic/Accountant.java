@@ -2,7 +2,7 @@ package com.lawrence.corejava.generic;
 
 import java.util.Objects;
 
-public class Accountant implements Calculator<Double, Accountant> {
+public class Accountant extends Employee implements Calculator<Double, Accountant> {
 
     private Double value;
 
@@ -18,7 +18,8 @@ public class Accountant implements Calculator<Double, Accountant> {
         return Objects.equals(value, that.value);
     }
 
-    public Accountant(Double value) {
+    public Accountant(Double value, String name) {
+        super(name);
         this.value = value;
     }
 

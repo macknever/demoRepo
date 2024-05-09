@@ -134,3 +134,8 @@ class BoundedGenericClass<T extends Comparable> {
 
 ```
 
+#### Wild card
+
+Wild card
+
+
