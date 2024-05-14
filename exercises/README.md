@@ -136,6 +136,25 @@ class BoundedGenericClass<T extends Comparable> {
 
 #### Wild card
 
-Wild card
+Wild card can make generic type generic. When you want to read `List<T>` like `void read(List<T>)`, you have to specify
+the type of T. If you want to make it generic, you need to use it like `void read(List<?>)`. If it is arbitrary type, that
+would make no sense. We can split the operations into two categories, read and write. 
+
+```java
+// read
+void read(List<? extends Parent> lists) {
+    for(var p : lists) {
+        p.print();
+    }
+}
+
+//write
+void write(Child[] children, List<? super Child> lists) {
+    for(var child : children) {
+        lsits.add(child);
+    }
+}
+
+```
 
 
