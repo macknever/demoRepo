@@ -1,5 +1,6 @@
 package com.lawrence.corejava.generic;
 
+import java.util.List;
 import java.util.Objects;
 
 public class Accountant extends Employee implements Calculator<Double, Accountant> {
@@ -40,5 +41,10 @@ public class Accountant extends Employee implements Calculator<Double, Accountan
     public Accountant subtract(Accountant b) {
         this.value -= b.value;
         return this;
+    }
+
+    @Override
+    public Integer sum(List<Double> list) {
+        return null;
     }
 }

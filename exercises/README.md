@@ -135,6 +135,8 @@ class BoundedGenericClass<T extends Comparable> {
 ```
 
 #### Wild card
+Wild card is question mark ?. When need to deal with a GenericClass<T>, say `foo (GenericClass<T>`, this T need to be a 
+specific type. If we need some dynamic of this T we need use Wild card.
 
 Wild card can make generic type generic. When you want to read `List<T>` like `void read(List<T>)`, you have to specify
 the type of T. If you want to make it generic, you need to use it like `void read(List<?>)`. If it is arbitrary type, that

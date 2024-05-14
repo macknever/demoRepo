@@ -1,5 +1,7 @@
 package com.lawrence.corejava.generic;
 
+import static org.assertj.core.api.Assertions.assertThat;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,6 +26,22 @@ class WildCardTest {
         Wrapper wrapper = new Wrapper();
         wrapper.process(envelops);
 
+    }
+
+    @Test
+    void upperBoundWildCardWork() {
+        Employee employee1 = new Employee("John");
+        Employee employee2 = new Employee("Kevin");
+        Employee employee3 = new Employee("Cary");
+        Employee employee4 = new Employee("Peter");
+        Engineer engineer = new Engineer("Walt", "Electronic");
+        List<Employee> employees = new ArrayList<>();
+        employees.add(employee1);
+        employees.add(employee2);
+
+        Wrapper wrapper = new Wrapper();
+        wrapper.addAsEngineer(engineer, employees);
+        assertThat(employees).hasSize(3);
     }
 
 }

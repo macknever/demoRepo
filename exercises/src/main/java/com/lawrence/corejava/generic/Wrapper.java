@@ -12,7 +12,7 @@ public class Wrapper {
     }
 
     //Why this method does not work
-    public void addIntoEnvelop(Employee employee , List<? super Engineer> engineers) {
-        engineers.add(employee);
+    public void addAsEngineer(Engineer engineer , List<? super Engineer> engineers) {
+        engineers.add(engineer);
     }
 }
