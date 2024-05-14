@@ -159,4 +159,14 @@ void write(Child[] children, List<? super Child> lists) {
 
 ```
 
+## Collections
+
+### TreeMap and TreeSet
+Those are sorted Map and Set. When needs a sorted map, consider to use a TreeMap. In default, TreeMap is sorted by Key 
+or a Comparator<? extends K>, here K is the type of the key of this TreeMap. TreeMap can not customize to sort by value.
+Also, because this TreeMap is sorted, if you customize the comparator, it has a new way to decide if the key is already there.
+For example, if you sort the key by length of the string, same length of the string will be considered to be same Key.
+
+### Example [Customized TreeMap](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/collections/Worker)
+
 
