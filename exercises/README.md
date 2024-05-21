@@ -173,7 +173,7 @@ For example, if you sort the key by length of the string, same length of the str
 ## Concurrency
 
 Concurrency is a mechanism in Java that multithreads can work "At the same time". In this chapter, the main point is not
-to showcase how we use Java to to Multithreading, but to prevent from the issues brought from it.
+to showcase how we use Java to do Multithreading, but to prevent from the issues brought from it.
 
 ### Race condition
 When different threads operating the same set of data, the data may corrupt in between.
