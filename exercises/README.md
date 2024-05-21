@@ -170,3 +170,16 @@ For example, if you sort the key by length of the string, same length of the str
 ### Example [Customized TreeMap](https://github.com/macknever/demoRepo/tree/master/exercises/src/main/java/com/lawrence/corejava/collections/Worker)
 
 
+## Concurrency
+
+Concurrency is a mechanism in Java that multithreads can work "At the same time". In this chapter, the main point is not
+to showcase how we use Java to to Multithreading, but to prevent from the issues brought from it.
+
+### Race condition
+When different threads operating the same set of data, the data may corrupt in between.
+
+There are two solutions:
+- lock
+- Synchronized methods or block
+
+The idea is simple. We lock the data from being altered --> change it --> unlock.
