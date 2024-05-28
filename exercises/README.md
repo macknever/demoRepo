@@ -183,3 +183,8 @@ There are two solutions:
 - Synchronized methods or block
 
 The idea is simple. We lock the data from being altered --> change it --> unlock.
+
+### Callable & Future
+
+`Callable` is similar to `Runable`. Class implements `Runable` does not bother to return result. `Callable` does. Since 
+the class will run asynchronously, the result is wrapped with a `Future`. It can get when the result is ready
