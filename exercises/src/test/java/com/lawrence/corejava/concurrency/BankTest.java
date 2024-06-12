@@ -1,5 +1,8 @@
 package com.lawrence.corejava.concurrency;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.junit.jupiter.api.Test;
 
 public class BankTest {
@@ -11,7 +14,7 @@ public class BankTest {
     @Test
     void testSynchronization() throws InterruptedException {
         Bank bank = new Bank(10000.0);
-        Account account = new Account(1000.0);
+        Account account = new Account(10000.0);
 
         final int safeDepositCount = 5;
         final int unsafeDepositCount = 5;
@@ -65,6 +68,38 @@ public class BankTest {
 
         System.out.printf("Final vault balance (safe): %10.2f%n", bank.getVault());
         System.out.printf("Final account balance (safe): %10.2f%n", account.getBalance());
+    }
+
+    @Test
+    void transferWithExecutor() {
+        Bank bank = new Bank(10000.0);
+        Account account = new Account(0);
+
+        List<Agent> unsafeAgents = new ArrayList<>();
+        unsafeAgents.add(new Agent(bank, account, DEPOSIT, UNSAFE));
+        unsafeAgents.add(new Agent(bank, account, DEPOSIT, UNSAFE));
+
+        BankService unsafeService = new BankService();
+
+        unsafeService.transferService(unsafeAgents);
+
+        System.out.printf("Final vault balance (unsafe): %10.2f%n", bank.getVault());
+        System.out.printf("Final account balance (unsafe): %10.2f%n", account.getBalance());
+
+        bank = new Bank(10000.0);
+        account = new Account(0);
+
+        List<Agent> safeAgents = new ArrayList<>();
+        safeAgents.add(new Agent(bank, account, DEPOSIT, SAFE));
+        safeAgents.add(new Agent(bank, account, DEPOSIT, SAFE));
+
+        BankService safeService = new BankService();
+
+        safeService.transferService(safeAgents);
+
+        System.out.printf("Final vault balance (safe): %10.2f%n", bank.getVault());
+        System.out.printf("Final account balance (safe): %10.2f%n", account.getBalance());
+
     }
 
 }

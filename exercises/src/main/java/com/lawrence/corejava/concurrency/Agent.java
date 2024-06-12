@@ -16,7 +16,7 @@ public class Agent implements Runnable {
     @Override
     public void run() {
         for (int i = 0; i < 1000; i++) {
-            double amount = 10d;
+            double amount = 1d;
             if (isDeposit) {
                 if (safe) {
                     bank.transferToAccountSafe(account, amount);
