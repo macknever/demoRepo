@@ -1,8 +1,9 @@
 package com.lawrence.corejava.concurrency;
 
-import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
-import java.util.concurrent.FutureTask;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
 
 import org.junit.jupiter.api.Test;
 
@@ -10,32 +11,13 @@ class CallableExampleTest {
 
     @Test
     void callableShouldWork() throws ExecutionException, InterruptedException {
-        // FutureTask is a concrete class that
-        // implements both Runnable and Future
-        FutureTask[] randomNumberTasks = new FutureTask[5];
+        ExecutorService executorService = Executors.newFixedThreadPool(2);
 
-        for (int i = 0; i < 5; i++) {
-            Callable callable = new CallableExample();
+        CallableExample callableExample = new CallableExample();
 
-            // Create the FutureTask with Callable
-            randomNumberTasks[i] = new FutureTask(callable);
+        Future<Integer> future = executorService.submit(callableExample);
 
-            // As it implements Runnable, create Thread
-            // with FutureTask
-            Thread t = new Thread(randomNumberTasks[i]);
-            t.start();
-        }
-
-        for (int i = 0; i < 5; i++) {
-            // As it implements Future, we can call get()
-            System.out.println(randomNumberTasks[i].get());
-
-            // This method blocks till the result is obtained
-            // The get method can throw checked exceptions
-            // like when it is interrupted. This is the reason
-            // for adding the throws clause to main
-        }
+        System.out.println(future.get());
     }
+
 }
-
-

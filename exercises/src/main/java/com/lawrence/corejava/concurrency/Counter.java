@@ -19,8 +19,5 @@ public class Counter {
     public int getCount() {
         return count;
     }
-
-    public static void main(String[] args) {
-        // Test code can go here
-    }
+    
 }
