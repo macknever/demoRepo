@@ -188,3 +188,14 @@ The idea is simple. We lock the data from being altered --> change it --> unlock
 
 `Callable` is similar to `Runable`. Class implements `Runable` does not bother to return result. `Callable` does. Since 
 the class will run asynchronously, the result is wrapped with a `Future`. It can get when the result is ready
+
+### CompletableFuture
+
+CompletableFuture, unless Future which is blocking, can register a callback to handle or do further operation to the result.
+`Future` needs to call `get()` to get the result, if you want to do further operation onto it, you neeed to wait till 
+future can get the result.
+`CompletableFuture` use fluent manner to compose all the operations that you want to do, and it will do each step when 
+the previous is complete.
+Also, it is called completableFuture, means you can give it a result, if you like. E.g. You plan to give it 5 seconds to
+get some results, if it hasn't been done within 5 seconds, you can call `completableFuture.complete(<result you want>)` 
+to set the result. Of course, you can also set it to te an Exception.
