@@ -210,3 +210,8 @@ ComletableFuture<String> completableFuture = CompletableFuture.supplyAsync(() ->
 completableFuture.thenApply(s -> s + " world");
 completableFuture.thenAccept(s -> System.out.println(s));
 ```
+
+#### Combine result
+
+We can use `thenCombine()` to combine two CompletableFutures. Say we have two completableFutures, cf1, cf2. It can be call 
+like this `cf1.thenCombine(cf2())` Need to notice that, the result of cf1 can be call as an argument of cf2.
