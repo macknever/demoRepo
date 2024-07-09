@@ -43,4 +43,8 @@ public class CompletableFutureExample {
                 .thenRun(runnable);
     }
 
+    public CompletableFuture<String> combinedFuture(final String str1, final String str2) {
+        return CompletableFuture.supplyAsync(() -> str1).thenCompose(s -> CompletableFuture.supplyAsync(() -> s + str2));
+    }
+
 }
