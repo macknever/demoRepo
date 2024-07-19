@@ -215,3 +215,16 @@ completableFuture.thenAccept(s -> System.out.println(s));
 
 We can use `thenCombine()` to combine two CompletableFutures. Say we have two completableFutures, cf1, cf2. It can be call 
 like this `cf1.thenCombine(cf2())` Need to notice that, the result of cf1 can be call as an argument of cf2.
+
+
+## Input and output 
+
+### Input and output streams
+
+For me there are two goals from learning this chapter:
+- Now how input and output are working in Java
+- How to use them in my daily job
+
+InputStream is to read from a source. A source can be a file, a String, an object etc. The most important concept here 
+is, those source are encoded to raw bytes by unicode or any other standards, before being read. And InputStream just 
+read the bytes.

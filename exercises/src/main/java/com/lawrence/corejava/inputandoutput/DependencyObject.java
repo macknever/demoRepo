@@ -1,16 +1,16 @@
-package com.lawrence.corejava.generic;
+package com.lawrence.corejava.inputandoutput;
 
 import java.io.Serializable;
 
-public class Employee implements Serializable {
+public class DependencyObject implements Serializable {
     private String name;
 
-    public Employee(String name) {
+    public DependencyObject(final String name) {
         this.name = name;
     }
 
     public String getName() {
-        return this.name;
+        return name;
     }
 
     public void setName(String name) {
