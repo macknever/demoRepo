@@ -1,6 +1,7 @@
 package com.lawrence.corejava.inputandoutput;
 
 import java.io.IOException;
+import java.nio.file.Path;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
@@ -50,6 +51,23 @@ class FileReaderExampleTest {
 
         // common dependency from obj2 also has the changed name field
         Assertions.assertEquals(changedName, TBRsFromFile[1].getObject().getName());
+    }
+
+    @Test
+    void pathShouldWork() throws IOException {
+        ToBeReadObj tbr = new ToBeReadObj("Lawrence", "3094");
+        ObjectReaderExample example = new ObjectReaderExample();
+
+        final String fileName = "tbr.ser";
+
+        example.writeObjectToFile(tbr, fileName);
+
+        Path filePath = Path.of(fileName);
+
+        Path tbrPath = filePath.resolve(filePath);
+
+        System.out.println(filePath.toAbsolutePath());
+        System.out.println(tbrPath);
     }
 
 }
