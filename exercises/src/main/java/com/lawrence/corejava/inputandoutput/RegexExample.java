@@ -25,14 +25,14 @@ public class RegexExample {
      * </p>
      *
      * <li>
-     *     \\b : boundary of word
-     *     \\w : [a-zA-Z0-9_]
-     *     (?: )
+     * \\b : boundary of word
+     * \\w : [a-zA-Z0-9_]
+     * (?: )
      * </li>
      *
      * @return Origin sentence without duplication
      */
-    public static String matchSequences(String sentence) {
+    public static String removeDuplicated(String sentence) {
         final String dupliateFinderRegex = "\\b(\\w+)(?:\\W+\\1\\b)+";
 
         Pattern pattern = Pattern.compile(dupliateFinderRegex);
@@ -44,5 +44,13 @@ public class RegexExample {
 
         return sentence;
 
+    }
+
+    public static boolean isEmailAddress(String email) {
+        final String emailFormat = "^\\w+[!@#$%^&*()_+<>?\\[\\]{}]?+\\w+@\\w+\\.\\w{2,6}$";
+
+        Pattern pattern = Pattern.compile(emailFormat);
+
+        return pattern.matcher(email).matches();
     }
 }

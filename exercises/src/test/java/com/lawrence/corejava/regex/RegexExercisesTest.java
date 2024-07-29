@@ -32,9 +32,19 @@ class RegexExercisesTest {
         Assertions.assertTrue(RegexExample.isMatch(patternPQ, "p", "pq", "pqqq"));
     }
 
-    /**
-     * Write a Java program to find sequences of lowercase letters joined by an underscore.
-     */
+    @Test
+    void removeDuplicatedTest() {
+        String duplicated = "Team Team is good good";
+        String correct = "Team is good";
+        Assertions.assertEquals(correct, RegexExample.removeDuplicated(duplicated));
+    }
 
+    @Test
+    void emailAddressTest() {
+        String email1 = "abc@coolmail.com";
+        String notEmail = "abccool";
+        Assertions.assertTrue(RegexExample.isEmailAddress(email1));
+        Assertions.assertFalse(RegexExample.isEmailAddress(notEmail));
+    }
 
 }
