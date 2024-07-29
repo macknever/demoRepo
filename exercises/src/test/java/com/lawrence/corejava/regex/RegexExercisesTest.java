@@ -32,4 +32,9 @@ class RegexExercisesTest {
         Assertions.assertTrue(RegexExample.isMatch(patternPQ, "p", "pq", "pqqq"));
     }
 
+    /**
+     * Write a Java program to find sequences of lowercase letters joined by an underscore.
+     */
+
+
 }
