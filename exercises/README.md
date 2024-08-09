@@ -228,3 +228,7 @@ For me there are two goals from learning this chapter:
 InputStream is to read from a source. A source can be a file, a String, an object etc. The most important concept here 
 is, those source are encoded to raw bytes by unicode or any other standards, before being read. And InputStream just 
 read the bytes.
+
+## JDBC
+
+A JDBC driver is a JDBC API implementation used for connecting to a particular type of database.
