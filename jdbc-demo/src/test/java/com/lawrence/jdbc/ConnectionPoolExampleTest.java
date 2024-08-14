@@ -1,5 +1,6 @@
 package com.lawrence.jdbc;
 
+import java.sql.ResultSet;
 import java.sql.SQLException;
 
 import org.junit.jupiter.api.Test;
@@ -18,7 +19,11 @@ class ConnectionPoolExampleTest {
     @Test
     void insertShouldWork() throws SQLException {
         cp.insert("MJ");
-        cp.showResult(cp.query("MJ"));
+        cp.insert("MJ");
+        cp.insert("MJ");
+        cp.insert("MJ");
+        ResultSet rs = cp.query("MJ");
+        cp.showResult(rs);
     }
 
     @Test
