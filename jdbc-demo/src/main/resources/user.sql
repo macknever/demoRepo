@@ -3,3 +3,5 @@ truncate table USERS;
 insert into USERS (name) values ('lawrence');
 insert into USERS (name) values ('emily');
 
+CREATE table if not exists
+
