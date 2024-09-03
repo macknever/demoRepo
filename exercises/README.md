@@ -255,3 +255,12 @@ module my.module {
     requires com.another.anotherpackage;
 }
 ```
+
+## Security
+
+### Class loader
+
+Dynamic load classes when they are needed by JVM. There are three types of classloaders:
+- Application --> To load your own class
+- Extension --> To load extension of java core classes
+- Bootstrap --> To load all other classes like ArrayList StringBuilder. The classloaders of them are written by native code
