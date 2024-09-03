@@ -232,3 +232,26 @@ read the bytes.
 ## JDBC
 
 A JDBC driver is a JDBC API implementation used for connecting to a particular type of database.
+
+## JPMS Java platform Module System
+
+JPMS is a mechanism to control the accessibility of classes. Like modifiers `public`,  `private`. To create a module, we
+need to create a module-info.java on root level. 
+```java
+module example.module{
+    // exports or requires
+}
+```
+This is a boundary of what this module needs and what this module wants to expose to external. If there is nothing, that
+ means no class can access any class from this module, no matter if it is `public` or 'private'
+
+### exports and requires
+
+If you want to expose some certain classes, you can specify that in module-info.java. For the classes needed, use requires
+
+```java
+module my.module {
+    exports com.mycompany.mypackage;
+    requires com.another.anotherpackage;
+}
+```
