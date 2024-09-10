@@ -264,3 +264,20 @@ Dynamic load classes when they are needed by JVM. There are three types of class
 - Application --> To load your own class
 - Extension --> To load extension of java core classes
 - Bootstrap --> To load all other classes like ArrayList StringBuilder. The classloaders of them are written by native code
+
+
+### Signature
+
+A want to send B a message.
+
+- Create fingerprint(message digest) SHA-256
+- Sender sign fingerprint using its private key(only know by sender)
+- Sender send message along with signature
+
+- B receives message and signature
+- B generates fingerprint for message
+- B decrypts signature with public key --> should get a fingerprint
+
+generated vs. decrypted
+
+
