@@ -280,4 +280,9 @@ A want to send B a message.
 
 generated vs. decrypted
 
+## Native methods
 
+Why we need use Java to call C?
+- legacy projects
+- performance
+- utilize functionalities that java does not have but c has
