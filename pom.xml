@@ -15,6 +15,7 @@
         <module>exercises</module>
         <module>login-demo</module>
         <module>jdbc-demo</module>
+        <module>guice</module>
     </modules>
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
