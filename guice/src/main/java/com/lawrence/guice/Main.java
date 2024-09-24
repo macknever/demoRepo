@@ -4,7 +4,9 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.lawrence.eventlistener.EventService;
 import com.lawrence.guice.module.EventListenerModule;
+import com.lawrence.guice.module.NetworkModule;
 import com.lawrence.guice.module.NotificationModule;
+import com.lawrence.network.NetworkService;
 import com.lawrence.notification.NotificationService;
 import com.lawrence.notification.ValidationPrinter;
 
@@ -36,5 +38,13 @@ public class Main {
         service.fireEvent("user log in");
         service.fireEvent("user log out");
         service.fireEvent("login", "another user log in");
+
+        //==================== Restriction ====================
+
+        Injector injector = Guice.createInjector(new NetworkModule());
+        NetworkService networkService = injector.getInstance(NetworkService.class);
+
+        // Example usage
+        networkService.printNetworkInfo(123456);
     }
 }
