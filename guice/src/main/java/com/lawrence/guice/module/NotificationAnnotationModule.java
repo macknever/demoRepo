@@ -7,10 +7,10 @@ import java.lang.annotation.Target;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.lawrence.guice.MessageFormatter;
-import com.lawrence.guice.MessageFormatterAnnotatedImpl;
-import com.lawrence.guice.MessageTemplateLoader;
-import com.lawrence.guice.MessageTemplateLoaderAnnotatedImpl;
+import com.lawrence.notification.MessageFormatter;
+import com.lawrence.notification.MessageFormatterAnnotatedImpl;
+import com.lawrence.notification.MessageTemplateLoader;
+import com.lawrence.notification.MessageTemplateLoaderAnnotatedImpl;
 
 import jakarta.inject.Qualifier;
 

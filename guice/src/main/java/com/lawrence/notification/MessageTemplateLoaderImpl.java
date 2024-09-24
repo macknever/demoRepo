@@ -1,4 +1,4 @@
-package com.lawrence.guice;
+package com.lawrence.notification;
 
 public class MessageTemplateLoaderImpl implements MessageTemplateLoader {
 

@@ -1,10 +1,10 @@
 package com.lawrence.guice.module;
 
 import com.google.inject.AbstractModule;
-import com.lawrence.guice.MessageFormatter;
-import com.lawrence.guice.MessageFormatterImpl;
-import com.lawrence.guice.MessageTemplateLoader;
-import com.lawrence.guice.MessageTemplateLoaderImpl;
+import com.lawrence.notification.MessageFormatter;
+import com.lawrence.notification.MessageFormatterImpl;
+import com.lawrence.notification.MessageTemplateLoader;
+import com.lawrence.notification.MessageTemplateLoaderImpl;
 
 public class NotificationConfigureModule extends AbstractModule {
 

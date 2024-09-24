@@ -2,10 +2,13 @@ package com.lawrence.guice.module;
 
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
-import com.lawrence.guice.MessageFormatter;
-import com.lawrence.guice.MessageFormatterImpl;
-import com.lawrence.guice.MessageTemplateLoader;
-import com.lawrence.guice.MessageTemplateLoaderImpl;
+import com.google.inject.name.Names;
+import com.lawrence.notification.MessageFormatter;
+import com.lawrence.notification.MessageFormatterImpl;
+import com.lawrence.notification.MessageTemplateLoader;
+import com.lawrence.notification.MessageTemplateLoaderImpl;
+import com.lawrence.notification.NotificationService;
+import com.lawrence.notification.ValidationPrinter;
 
 public class NotificationModule extends AbstractModule {
 
@@ -17,6 +20,21 @@ public class NotificationModule extends AbstractModule {
     @Provides
     MessageTemplateLoader provideMessageTemplateLoader(MessageTemplateLoaderImpl messageTemplateLoaderImpl) {
         return messageTemplateLoaderImpl;
+    }
+
+    @Override
+    public void configure() {
+        bind(String.class)
+                .annotatedWith(Names.named("templateId"))
+                .toInstance("TemplateId from guice");
+
+        bind(String.class)
+                .annotatedWith(Names.named("messageData"))
+                .toInstance("messageData from guice");
+
+        bind(NotificationService.class).toProvider(NotificationServiceProvider.class);
+
+        bind(ValidationPrinter.class);
     }
 
 }

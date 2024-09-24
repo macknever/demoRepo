@@ -1,13 +1,9 @@
-package com.lawrence.guice;
-
-import com.google.inject.Inject;
-import com.lawrence.guice.module.NotificationAnnotationModule;
+package com.lawrence.notification;
 
 public class NotificationService {
     private final MessageFormatter messageFormatter;
 
-    @Inject
-    public NotificationService(@NotificationAnnotationModule.Formatter MessageFormatter messageFormatter) {
+    public NotificationService(MessageFormatter messageFormatter) {
         this.messageFormatter = messageFormatter;
     }
 
