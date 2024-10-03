@@ -4,6 +4,7 @@ import com.google.inject.Guice;
 import com.google.inject.Injector;
 import com.lawrence.eventlistener.EventService;
 import com.lawrence.guice.module.EventListenerModule;
+import com.lawrence.guice.module.EventListenerModule2;
 import com.lawrence.guice.module.NetworkModule;
 import com.lawrence.guice.module.NotificationModule;
 import com.lawrence.network.NetworkService;
@@ -33,7 +34,7 @@ public class Main {
         printer.print();
 
         //==================== Multibinding ====================
-        Injector eventListenerInjector = Guice.createInjector(new EventListenerModule());
+        Injector eventListenerInjector = Guice.createInjector(new EventListenerModule(), new EventListenerModule2());
         EventService service = eventListenerInjector.getInstance(EventService.class);
         service.fireEvent("user log in");
         service.fireEvent("user log out");

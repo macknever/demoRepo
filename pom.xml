@@ -16,10 +16,12 @@
         <module>login-demo</module>
         <module>jdbc-demo</module>
         <module>guice</module>
+        <module>simpleDemo</module>
+        <module>vertxDemo</module>
     </modules>
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
     </properties>
 
 </project>
