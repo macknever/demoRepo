@@ -9,7 +9,8 @@ public class EmptyVerticle extends AbstractVerticle {
     public static final Logger LOG = LoggerFactory.getLogger(EmptyVerticle.class);
 
     @Override
-    public void start() {
+    public void start() throws InterruptedException {
+        Thread.sleep(5000);
         LOG.info("Verticle started: {}", this);
     }
 
