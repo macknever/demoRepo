@@ -10,7 +10,6 @@ public class EmptyVerticle extends AbstractVerticle {
 
     @Override
     public void start() throws InterruptedException {
-        Thread.sleep(5000);
         LOG.info("Verticle started: {}", this);
     }
 

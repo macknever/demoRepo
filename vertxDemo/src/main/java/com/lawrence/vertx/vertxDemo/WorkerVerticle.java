@@ -28,7 +28,7 @@ public class WorkerVerticle extends AbstractVerticle {
         Vertx vertx = Vertx.vertx();
         DeploymentOptions opts = new DeploymentOptions()
                 .setInstances(2)
-                .setWorker(true);
+                .setWorker(false);
         vertx.deployVerticle(WorkerVerticle.class, opts);
     }
 }

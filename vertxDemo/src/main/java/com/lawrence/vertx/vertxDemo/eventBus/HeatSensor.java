@@ -1,4 +1,4 @@
-package com.lawrence.vertx.vertxDemo;
+package com.lawrence.vertx.vertxDemo.eventBus;
 
 import java.util.Random;
 import java.util.UUID;
@@ -29,6 +29,9 @@ public class HeatSensor extends AbstractVerticle {
         scheduleNextUpdate();
     }
 
+    /**
+     * @return Gaussian distributed double, mean 0.0 standard deviation 1.0
+     */
     private double delta() {
         if (random.nextInt() > 0) {
             return random.nextGaussian();

@@ -1,4 +1,4 @@
-package com.lawrence.vertx.vertxDemo;
+package com.lawrence.vertx.vertxDemo.eventBus;
 
 import java.util.HashMap;
 import java.util.stream.Collectors;
