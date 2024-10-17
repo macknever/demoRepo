@@ -9,6 +9,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.eventbus.EventBus;
 import io.vertx.core.json.JsonObject;
 
+/**
+ * Shows data onto console
+ */
 public class Listener extends AbstractVerticle {
     private final Logger LOG = LoggerFactory.getLogger(Listener.class);
     private final DecimalFormat format = new DecimalFormat("#.##");
