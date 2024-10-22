@@ -9,11 +9,14 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
+import io.vertx.core.http.HttpResponseExpectation;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
 import io.vertx.core.json.JsonObject;
+import io.vertx.ext.web.client.HttpResponse;
 import io.vertx.ext.web.client.WebClient;
 import io.vertx.ext.web.client.predicate.ResponsePredicate;
 import io.vertx.ext.web.codec.BodyCodec;
@@ -77,6 +80,16 @@ public class CollectorService extends AbstractVerticle {
         request.response()
                 .putHeader("Content-Type", "application/json")
                 .end(data.encode());
+    }
+
+    private Future<JsonObject> fetchTemperature(int port) {
+        return webClient
+                .get(port, "localhost", "/")
+                .as(BodyCodec.jsonObject())
+                .send()
+                .expecting(HttpResponseExpectation.SC_SUCCESS)
+                .map(HttpResponse::body);
+
     }
 
     public static void main(String[] args) {
