@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
 import io.vertx.core.http.HttpServerRequest;
 import io.vertx.core.json.JsonArray;
@@ -22,11 +23,16 @@ public class CollectorService extends AbstractVerticle {
     private WebClient webClient;
 
     @Override
-    public void start() {
+    public void start(Promise<Void> promise) {
         webClient = WebClient.create(vertx);
         vertx.createHttpServer()
                 .requestHandler(this::handleRequest)
-                .listen(8080);
+                .listen(8080)
+                .onFailure(promise::fail)
+                .onSuccess(ok -> {
+                    System.out.println("https://localhost:8080");
+                    promise.complete();
+                });
     }
 
     private void handleRequest(HttpServerRequest request) {

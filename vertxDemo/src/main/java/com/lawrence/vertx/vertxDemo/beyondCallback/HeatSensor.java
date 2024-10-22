@@ -27,10 +27,6 @@ public class HeatSensor extends AbstractVerticle {
 
     private void update(long timerId) {
         temperature = temperature + (delta() / 10);
-        JsonObject payload = new JsonObject()
-                .put("id", sensorId)
-                .put("temp", temperature);
-        vertx.eventBus().publish("sensor.updates", payload);
         scheduleNextUpdate();
     }
 
