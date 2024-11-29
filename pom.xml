@@ -18,6 +18,8 @@
         <module>guice</module>
         <module>simpleDemo</module>
         <module>vertxDemo</module>
+        <module>vertxApp</module>
+        <module>vertxConsumer</module>
     </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
