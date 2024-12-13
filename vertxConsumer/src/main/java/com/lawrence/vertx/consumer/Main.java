@@ -14,12 +14,12 @@ public class Main {
             }
         });
 
-        //        vertx.deployVerticle(new CassVerticle(), res -> {
-        //            if (res.succeeded()) {
-        //                System.out.println("CassVerticle deployed successfully.");
-        //            } else {
-        //                System.err.println("Failed to deploy CassVerticle: " + res.cause());
-        //            }
-        //        });
+                vertx.deployVerticle(new CassVerticle(), res -> {
+                    if (res.succeeded()) {
+                        System.out.println("CassVerticle deployed successfully.");
+                    } else {
+                        System.err.println("Failed to deploy CassVerticle: " + res.cause());
+                    }
+                });
     }
 }

@@ -10,7 +10,9 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
+import io.vertx.ext.web.RequestBody;
 import io.vertx.ext.web.Router;
+import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 
@@ -24,35 +26,49 @@ public class KafkaWebAppVerticle extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
         //
-        config.put("bootstrap.servers", "127.0.0.1:50448");
+        config.put("bootstrap.servers", "192.168.59.100:32123");
         config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("session.timeout.ms", "10L");
         KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "the-producer", config);
 
-        router
-                .post("/api/messages/:topic")
+        router.route().handler(BodyHandler.create());
+
+        router.post("/api/messages/:topic")
                 .handler(ctx -> {
-                    final String currentTopic = ctx.pathParam("topic");
-                    final String currentContent = ctx.body().asString();
-                    KafkaProducerRecord<String, String> record = KafkaProducerRecord.create(currentTopic,
-                            currentContent);
-                    //producer.write(record);
-                    LOG.info("Sending record to kafka");
-                    producer.send(record).onSuccess(recordMetadata ->
-                                    LOG.info(
-                                            "Message {} written on topic = {}, partition = {},offset = {} ",
-                                            record.value(),
-                                            recordMetadata.getTopic(),
-                                            recordMetadata.getPartition(),
-                                            recordMetadata.getOffset()))
-                            .onFailure(err -> LOG.error("Failed to send value to Kafka, {}", err.getMessage()));
+                    final RequestBody body = ctx.body();
+                        final String currentTopic = ctx.pathParam("topic");
+                        LOG.info("current topic is {}", currentTopic);
+                        final String currentContent = body.asJsonObject().getString("testName");
+                        KafkaProducerRecord<String, String> producerRecord = KafkaProducerRecord.create(currentTopic,
+                                currentContent);
+                        LOG.info("current ctx and content is {}, {}", ctx, currentContent);
+                        //producer.write(record);
+                        LOG.info("Sending record to kafka");
+                        producer.send(producerRecord).onSuccess(recordMetadata ->
+                                        LOG.info(
+                                                "Message {} written on topic = {}, partition = {},offset = {} ",
+                                                producerRecord.value(),
+                                                recordMetadata.getTopic(),
+                                                recordMetadata.getPartition(),
+                                                recordMetadata.getOffset()))
+                                .onFailure(err -> LOG.error("Failed to send value to Kafka, {}", err.getMessage()));
+                        ctx.next();
+                    })
+                .handler(ctx -> {
                     HttpServerResponse response = ctx.response();
                     response
                             .putHeader("content-type", "text/plain")
-                            .end("Simple web vertx is working now");
-
+                            .end("Simple web vertx is working now ");
                 });
+
+        router
+                .get("/api/messages")
+                .handler(ctx -> {
+                    final String content = ctx.body().asString();
+                    ctx.response().putHeader("content-type", "text/plain").end("messages");
+                });
+
         server
                 .requestHandler(router)
                 .listen(8080)

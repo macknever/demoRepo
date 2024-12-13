@@ -18,12 +18,12 @@ public class KafkaConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        config.put("bootstrap.servers", "127.0.0.1:50448");
+        config.put("bootstrap.servers", "192.168.59.100:32123");
         config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("group.id", "my_group");
-        config.put("auto.offset.reset", "earliest");
-        config.put("enable.auto.commit", "false");
+        config.put("auto.offset.reset", "latest");
+        config.put("enable.auto.commit", "true");
 
         KafkaConsumer<String, String> consumer = KafkaConsumer.create(vertx, config);
 
@@ -47,7 +47,6 @@ public class KafkaConsumerVerticle extends AbstractVerticle {
                                         System.out.println("Something went wrong when polling " + cause.toString());
                                         cause.printStackTrace();
 
-                                        // Stop polling if something went wrong
                                         vertx.cancelTimer(timerId);
                                     })
                     );
