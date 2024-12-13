@@ -12,7 +12,7 @@ public class KafkaBrokerInfo {
         // Kafka configuration properties
         Properties props = new Properties();
         props.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG,
-                "localhost:56185"); // Update with your broker address
+                "192.168.49.2:30092"); // Update with your broker address
 
         // Create an AdminClient
         try (AdminClient adminClient = AdminClient.create(props)) {
