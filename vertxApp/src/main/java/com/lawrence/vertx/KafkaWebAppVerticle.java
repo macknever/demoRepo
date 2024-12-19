@@ -10,9 +10,7 @@ import io.vertx.core.AbstractVerticle;
 import io.vertx.core.Promise;
 import io.vertx.core.http.HttpServer;
 import io.vertx.core.http.HttpServerResponse;
-import io.vertx.ext.web.RequestBody;
 import io.vertx.ext.web.Router;
-import io.vertx.ext.web.handler.BodyHandler;
 import io.vertx.kafka.client.producer.KafkaProducer;
 import io.vertx.kafka.client.producer.KafkaProducerRecord;
 
@@ -26,24 +24,22 @@ public class KafkaWebAppVerticle extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
         //
-        config.put("bootstrap.servers", "192.168.59.100:32123");
+        config.put("bootstrap.servers", "192.168.59.100:30092");
         config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("session.timeout.ms", "10L");
         KafkaProducer<String, String> producer = KafkaProducer.createShared(vertx, "the-producer", config);
 
-        router.route().handler(BodyHandler.create());
 
         router.post("/api/messages/:topic")
                 .handler(ctx -> {
-                    final RequestBody body = ctx.body();
+                    ctx.request().bodyHandler(body -> {
                         final String currentTopic = ctx.pathParam("topic");
                         LOG.info("current topic is {}", currentTopic);
-                        final String currentContent = body.asJsonObject().getString("testName");
+                        final String currentContent = body.toString();
                         KafkaProducerRecord<String, String> producerRecord = KafkaProducerRecord.create(currentTopic,
                                 currentContent);
                         LOG.info("current ctx and content is {}, {}", ctx, currentContent);
-                        //producer.write(record);
                         LOG.info("Sending record to kafka");
                         producer.send(producerRecord).onSuccess(recordMetadata ->
                                         LOG.info(
@@ -53,8 +49,9 @@ public class KafkaWebAppVerticle extends AbstractVerticle {
                                                 recordMetadata.getPartition(),
                                                 recordMetadata.getOffset()))
                                 .onFailure(err -> LOG.error("Failed to send value to Kafka, {}", err.getMessage()));
-                        ctx.next();
-                    })
+                    });
+                    ctx.next();
+                })
                 .handler(ctx -> {
                     HttpServerResponse response = ctx.response();
                     response

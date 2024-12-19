@@ -14,9 +14,9 @@ public class KafkaTopicCreator {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTopicCreator.class);
 
     public static void main(String[] args) {
-        String bootstrapServers = "192.168.59.100:32123";
+        String bootstrapServers = "192.168.59.100:30092";
 
-        String topicName = "notifications";
+        String topicName = "testTopic-1";
         int numPartitions = 3;
         short replicationFactor = 1;
 
