@@ -29,7 +29,7 @@ spec:
         - name: KAFKA_LISTENERS
           value: INTERNAL://:9092,EXTERNAL://:9094
         - name: KAFKA_ADVERTISED_LISTENERS
-          value: INTERNAL://kafka-service:9094,EXTERNAL://192.168.59.100:30092
+          value: INTERNAL://kafka-service:9094,EXTERNAL://localhost:30092
         - name: KAFKA_INTER_BROKER_LISTENER_NAME
           value: INTERNAL
 
@@ -40,7 +40,7 @@ kind: Service
 metadata:
   name: kafka-service
 spec:
-  type: LoadBalancer
+  type: NodePort
   selector:
     app: kafka
   ports:

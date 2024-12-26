@@ -13,7 +13,7 @@ public class KafkaHealthCheck {
 
     public static void main(String[] args) throws InterruptedException, ExecutionException {
 
-        String brokerUrl = "192.168.59.100:30092";
+        String brokerUrl = "localhost:30092";
 
         Properties properties = new Properties();
         properties.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, brokerUrl);

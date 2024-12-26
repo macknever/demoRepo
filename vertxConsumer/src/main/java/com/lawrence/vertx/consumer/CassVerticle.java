@@ -26,7 +26,7 @@ public class CassVerticle extends AbstractVerticle {
     @Override
     public void start() {
         CassandraClientOptions options = new CassandraClientOptions()
-                .addContactPoint("localhost", 9042)
+                .addContactPoint("localhost", 30942)
                 .setKeyspace("simple_keyspace");
 
         CassandraClient client = CassandraClient.create(vertx, options);

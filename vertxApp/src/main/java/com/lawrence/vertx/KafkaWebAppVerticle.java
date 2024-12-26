@@ -24,7 +24,7 @@ public class KafkaWebAppVerticle extends AbstractVerticle {
         HttpServer server = vertx.createHttpServer();
         Router router = Router.router(vertx);
         //
-        config.put("bootstrap.servers", "192.168.59.100:30092");
+        config.put("bootstrap.servers", "localhost:30092");
         config.put("key.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("value.serializer", "org.apache.kafka.common.serialization.StringSerializer");
         config.put("session.timeout.ms", "10L");

@@ -1,22 +1,22 @@
 package com.lawrence.vertx;
 
+import java.util.Collections;
+import java.util.Properties;
+import java.util.concurrent.ExecutionException;
+
 import org.apache.kafka.clients.admin.AdminClient;
 import org.apache.kafka.clients.admin.AdminClientConfig;
 import org.apache.kafka.clients.admin.NewTopic;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
-import java.util.Properties;
-import java.util.concurrent.ExecutionException;
-
 public class KafkaTopicCreator {
     private static final Logger LOG = LoggerFactory.getLogger(KafkaTopicCreator.class);
 
     public static void main(String[] args) {
-        String bootstrapServers = "192.168.59.100:30092";
+        String bootstrapServers = "localhost:30092";
 
-        String topicName = "testTopic-1";
+        String topicName = "notifications";
         int numPartitions = 3;
         short replicationFactor = 1;
 

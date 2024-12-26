@@ -18,7 +18,7 @@ public class KafkaConsumerVerticle extends AbstractVerticle {
 
     @Override
     public void start() {
-        config.put("bootstrap.servers", "192.168.59.100:32123");
+        config.put("bootstrap.servers", "localhost:30092");
         config.put("key.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("value.deserializer", "org.apache.kafka.common.serialization.StringDeserializer");
         config.put("group.id", "my_group");
@@ -33,7 +33,7 @@ public class KafkaConsumerVerticle extends AbstractVerticle {
                     System.out.println("Consumer subscribed");
 
                     // Let's poll every second
-                    vertx.setPeriodic(1000, timerId ->
+                    vertx.setPeriodic(10, timerId ->
                             consumer
                                     .poll(Duration.ofMillis(100))
                                     .onSuccess(records -> {
