@@ -3,8 +3,8 @@ spring:
     name: data-loader-spring
   cassandra:
     keyspace-name: main
-    username: DHynjgNmFQRTHozaebEotrpC
-    password: DknXkDwLmCk_h9npWT_.l0vyyiK,6YqEQekEKT+OwrH75.TE-bcTgZeuefG-eEtMryzU2ZEjSq.iwll.HSuGnj3L51ZC05N8RWYvMcCZ9NWo.q8,_Gx0oj7chgmnfmgW
+    username: lPEdKneQrnIRSQNjMxyMGwAZ
+    password: 74kqpCg.ZwB5BcELCxbqLqfJfL_3Kqr9m_GmB6G.xTRL3ry.aFmPXs5NW2Ql0OJojisg318oiEvgd1AtSwRzdXKlutPa0hk6JDW8l-4lpA0byTxcbDfZhKu5MA+kjZOL
     schema-action: create_if_not_exists
     request:
       timeout: 10s
@@ -18,10 +18,11 @@ spring:
 datastax.astra:
   secure-connect-bundle: bundle/scb.zip
   author-data-path: /Users/lawrence_li/Documents/11_Code/02_Java/demoRepo/data-loader-spring/src/main/resources/data/author_data.txt
-  work-data-path: /Users/lawrence_li/Downloads/works_data.txt
-  partial-work-path: data/partial_work_data.txt
+  work-data-path: data/works_data.txt
+#  partial-work-path: data/partial_work_data.txt
 astra.db:
-  id: a63b1708-b3bf-4d93-839d-66e8fb25a5f4
+  id: a5e6d75c-ad29-4b23-baaf-e4470c18b738-1
   region: us-east1
   keyspace: main
-  application.token: AstraCS:DHynjgNmFQRTHozaebEotrpC:2abd4be7564dfa8e13010d039b3e682b78fe596605137415d6d1643edd0488d3
+  application.token: AstraCS:lPEdKneQrnIRSQNjMxyMGwAZ:42a4e61a3eb9f83dc65260fdbba3bd2e4408dabbd197d10f5d3158cb8880e867
+

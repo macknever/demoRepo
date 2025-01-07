@@ -11,6 +11,7 @@ import com.lawrence.cassandra.Author;
 import com.lawrence.cassandra.AuthorRepository;
 import com.lawrence.guice.injector.MainInjector;
 import com.typesafe.config.ConfigException;
+
 import org.checkerframework.checker.units.qual.A;
 
 import java.io.IOException;
@@ -22,10 +23,10 @@ import java.util.stream.Stream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import java.util.*;
 
 import static com.lawrence.cassandra.Author.*;
-
 
 public class Main {
     private static String AUTHOR_PATH_PROP = "author.path";
@@ -41,14 +42,6 @@ public class Main {
 
         String authorFullPath = Objects.requireNonNull(Main.class.getClassLoader()
                 .getResource(authorDataPath)).getPath();
-
-
-
-
-
-
-
-
     }
 
     private static void loadAuthor(final String dataPath, final AuthorRepository repository) {
@@ -56,11 +49,11 @@ public class Main {
                 .getResource(dataPath)).getPath();
         Path authorDataPath = Paths.get(authorFullPath);
 
-        try(Stream<String> lines = Files.lines(authorDataPath)) {
+        try (Stream<String> lines = Files.lines(authorDataPath)) {
             lines.parallel().map(line -> line.substring(line.indexOf("{"))).map(jsonString -> {
                 try {
                     JSONObject jsonAuthor = new JSONObject(jsonString);
-                    return new Author(jsonAuthor.optString("key").replace("/authors/",""),
+                    return new Author(jsonAuthor.optString("key").replace("/authors/", ""),
                             jsonAuthor.optString("name"), jsonAuthor.optString("personal_name"));
                 } catch (JSONException e) {
                     throw new RuntimeException(e);
