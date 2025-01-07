@@ -7,11 +7,14 @@ import com.datastax.oss.driver.api.core.CqlSession;
 import com.datastax.oss.driver.api.core.CqlSessionBuilder;
 import com.google.inject.AbstractModule;
 import com.google.inject.Provides;
+import com.google.inject.Singleton;
 import com.google.inject.name.Named;
 
+import io.vertx.cassandra.CassandraClient;
 import io.vertx.cassandra.CassandraClientOptions;
+import io.vertx.core.Vertx;
 
-public class CassandraSessionModule extends AbstractModule {
+public class CassandraModule extends AbstractModule {
 
     private static final String DATASTAX_ASTRA_TOKEN_PROP = "datastax.astra.token";
     private static final String DATASTAX_ASTRA_ID_PROP = "datastax.astra.id";
@@ -30,13 +33,14 @@ public class CassandraSessionModule extends AbstractModule {
     }
 
     @Provides
-    public CqlSession provideCqlSession(CqlSessionBuilder builder) {
-        return builder.build();
+    @Singleton
+    public CassandraClientOptions providesCassandraClientOptions(CqlSessionBuilder builder) {
+        return new CassandraClientOptions(builder);
     }
 
     @Provides
-    public CassandraClientOptions providesCassandraClientOptions(CqlSessionBuilder builder) {
-        return new CassandraClientOptions(builder);
+    public CassandraClient providesCassandraClient(final Vertx vertx, CassandraClientOptions options) {
+        return CassandraClient.create(vertx, options);
     }
 
 }

@@ -1,7 +1,6 @@
 package com.lawrence.kafka.guice.injector;
 
 import com.google.inject.Injector;
-import com.lawrence.kafka.guice.module.CassandraSessionModule;
 import com.lawrence.kafka.guice.module.KafkaModule;
 
 public class MainInjector {
