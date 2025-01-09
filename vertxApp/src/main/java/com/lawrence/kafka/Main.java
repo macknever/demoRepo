@@ -13,6 +13,7 @@ import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
+import com.lawrence.kafka.cassandra.AuthorRepository;
 import com.lawrence.kafka.guice.injector.MainInjector;
 import com.lawrence.kafka.guice.injector.PropertiesInjector;
 import com.lawrence.kafka.guice.module.KafkaModule;
@@ -34,7 +35,9 @@ public class Main {
                 injector.getInstance(
                         Key.get(new TypeLiteral<>() {
                         }, Names.named(KAFKA_PRODUCER)));
-        
+
+        AuthorRepository authorRepository = injector.getInstance(AuthorRepository.class);
+
         // Deploy the KafkaWebAppVerticle
         vertx.deployVerticle(new KafkaWebAppVerticle(producer), res -> {
             if (res.succeeded()) {
@@ -43,5 +46,6 @@ public class Main {
                 System.err.println("Failed to deploy KafkaWebAppVerticle: " + res.cause());
             }
         });
+
     }
 }
