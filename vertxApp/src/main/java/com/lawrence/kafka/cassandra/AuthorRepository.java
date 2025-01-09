@@ -1,15 +1,11 @@
 package com.lawrence.kafka.cassandra;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.datastax.oss.driver.api.core.cql.PreparedStatement;
-import com.datastax.oss.driver.api.core.cql.Row;
 import com.google.inject.Inject;
 import com.lawrence.kafka.guice.annotations.AuthorTable;
 import com.lawrence.kafka.guice.annotations.MainKeySpace;
@@ -30,8 +26,6 @@ public class AuthorRepository implements CassandraRepository<Author> {
 
     private final String keyspace;
     private final String tableName;
-    private final String findByIdQuery;
-    private final String findByNameQuery;
 
     private static final String CREATE_TABLE_QUERY_FORMAT = "CREATE TABLE IF NOT EXISTS "
             + "%s.%s" + " ("
@@ -56,74 +50,83 @@ public class AuthorRepository implements CassandraRepository<Author> {
         this.keyspace = keyspace;
         this.tableName = tableName;
 
+        initRepository();
+    }
+
+    private void initRepository() {
         final String createTableQuery = String.format(CREATE_TABLE_QUERY_FORMAT, keyspace, tableName);
-        findByIdQuery = String.format(SELECT_QUERY_FORMAT, keyspace, tableName, AUTHOR_ID_COLUMN);
-        findByNameQuery = String.format(SELECT_QUERY_FORMAT, keyspace, tableName,
-                AUTHOR_NAME_COLUMN);
 
         cassandraClient.prepare(createTableQuery)
-                .onComplete(psr -> {
-                    if (psr.succeeded()) {
+                .onComplete(ps -> {
+                    if (ps.succeeded()) {
                         LOG.info("The create table query has successfully been prepared");
-                        createAuthorStatement = psr.result();
-                        this.createTable();
+                        createAuthorStatement = ps.result();
+                        executeCreateTable();
                     } else {
-                        LOG.error("The create table query has failed to prepare", psr.cause());
+                        LOG.error("The create table query has failed to prepare", ps.cause());
                     }
                 });
     }
 
-    @Override
-    public void createTable() {
+    private void executeCreateTable() {
+        if (createAuthorStatement == null) {
+            LOG.error("Create table statement is not prepared yet");
+        }
+
         cassandraClient.execute(createAuthorStatement.getQuery())
                 .onComplete(done -> {
                     ResultSet rs = done.result();
                     if (rs.wasApplied()) {
                         LOG.info("Table has been created successfully. Will create prepared statements");
-
-                        final String insertQuery = String.format(INSERT_QUERY_FORMAT, keyspace, tableName,
-                                AUTHOR_ID_COLUMN, AUTHOR_NAME_COLUMN, PERSONAL_NAME_COLUMN);
-
-                        cassandraClient.prepare(insertQuery)
-                                .onComplete(psr -> {
-                                    if (psr.succeeded()) {
-                                        LOG.info("The insert query has successfully been prepared");
-                                        insertAuthorStatement = psr.result();
-                                    } else {
-                                        LOG.error("The insert query has failed to prepare", psr.cause());
-                                    }
-                                });
-
-
-                        cassandraClient.prepare(findByIdQuery)
-                                .onComplete(psr -> {
-                                    if (psr.succeeded()) {
-                                        LOG.info("The find by id query has successfully been prepared");
-                                        findByIdStatement = psr.result();
-                                    } else {
-                                        LOG.error("The find by id query has failed to prepare", psr.cause());
-                                    }
-                                });
-
-                        cassandraClient.prepare(findByNameQuery)
-                                .onComplete(psr -> {
-                                    if (psr.succeeded()) {
-                                        LOG.info("The find by name query has successfully been prepared");
-                                        findByNameStatement = psr.result();
-                                    } else {
-                                        LOG.error("The find by name query has failed to prepare", psr.cause());
-                                    }
-                                });
-
+                        prepareQueries();
                     } else {
                         LOG.error("Table has not been created");
                     }
                 });
+    }
 
+    private void prepareQueries() {
+        final String insertQuery = String.format(INSERT_QUERY_FORMAT, keyspace, tableName,
+                AUTHOR_ID_COLUMN, AUTHOR_NAME_COLUMN, PERSONAL_NAME_COLUMN);
+        final String findByIdQuery = String.format(SELECT_QUERY_FORMAT, keyspace, tableName, AUTHOR_ID_COLUMN);
+        final String findByNameQuery = String.format(SELECT_QUERY_FORMAT, keyspace, tableName,
+                AUTHOR_NAME_COLUMN);
+
+        cassandraClient.prepare(insertQuery)
+                .onComplete(psr -> {
+                    if (psr.succeeded()) {
+                        LOG.info("The insert query has successfully been prepared");
+                        insertAuthorStatement = psr.result();
+                    } else {
+                        LOG.error("The insert query has failed to prepare", psr.cause());
+                    }
+                });
+
+
+        cassandraClient.prepare(findByIdQuery)
+                .onComplete(psr -> {
+                    if (psr.succeeded()) {
+                        LOG.info("The find by id query has successfully been prepared");
+                        findByIdStatement = psr.result();
+                    } else {
+                        LOG.error("The find by id query has failed to prepare", psr.cause());
+                    }
+                });
+
+        cassandraClient.prepare(findByNameQuery)
+                .onComplete(psr -> {
+                    if (psr.succeeded()) {
+                        LOG.info("The find by name query has successfully been prepared");
+                        findByNameStatement = psr.result();
+                    } else {
+                        LOG.error("The find by name query has failed to prepare", psr.cause());
+                    }
+                });
     }
 
     @Override
-    public void insert(Author author) {
+    public Future<Void> insert(Author author) {
+        Promise<Void> promise = Promise.promise();
         cassandraClient.execute(insertAuthorStatement.bind(author.id(), author.name(), author.personalName()))
                 .onComplete(done -> {
                     ResultSet rs = done.result();
@@ -133,6 +136,7 @@ public class AuthorRepository implements CassandraRepository<Author> {
                         LOG.error("Author failed to be inserted");
                     }
                 });
+        return promise.future();
     }
 
     @Override
