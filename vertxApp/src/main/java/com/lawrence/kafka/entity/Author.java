@@ -1,4 +1,4 @@
-package com.lawrence.kafka.cassandra;
+package com.lawrence.kafka.entity;
 
 public record Author(String id, String name, String personalName) {
 }

@@ -1,29 +1,29 @@
 package com.lawrence.kafka;
 
-import static com.lawrence.kafka.guice.Constants.VALUE_SERIALIZER;
+import static com.lawrence.kafka.guice.module.KafkaModule.KAFKA_CONSUMER;
 import static com.lawrence.kafka.guice.module.KafkaModule.KAFKA_PRODUCER;
-import static com.lawrence.kafka.guice.module.KafkaModule.KAFKA_PRODUCER_CONFIG;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import com.google.inject.Guice;
-import com.google.inject.Inject;
 import com.google.inject.Injector;
 import com.google.inject.Key;
 import com.google.inject.TypeLiteral;
 import com.google.inject.name.Names;
-import com.lawrence.kafka.cassandra.AuthorRepository;
+import com.lawrence.kafka.cassandra.service.AuthorService;
+import com.lawrence.kafka.consumer.KafkaConsumerVerticle;
+import com.lawrence.kafka.entity.Author;
+import com.lawrence.kafka.cassandra.repository.AuthorRepository;
 import com.lawrence.kafka.guice.injector.MainInjector;
-import com.lawrence.kafka.guice.injector.PropertiesInjector;
-import com.lawrence.kafka.guice.module.KafkaModule;
 import com.lawrence.kafka.producer.KafkaWebAppVerticle;
 
 import io.vertx.core.Vertx;
+import io.vertx.kafka.client.consumer.KafkaConsumer;
 import io.vertx.kafka.client.producer.KafkaProducer;
-import io.vertx.kafka.client.producer.impl.KafkaProducerImpl;
 
 public class Main {
+    private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+
     public static void main(String[] args) {
         // Create a Vertx instance
         Injector injector = MainInjector.getInstance();
@@ -36,14 +36,27 @@ public class Main {
                         Key.get(new TypeLiteral<>() {
                         }, Names.named(KAFKA_PRODUCER)));
 
-        AuthorRepository authorRepository = injector.getInstance(AuthorRepository.class);
+        AuthorService authorService = injector.getInstance(AuthorService.class);
+        KafkaConsumer<String, String> consumer =
+                injector.getInstance(Key.get(new TypeLiteral<>() {
+                }, Names.named(KAFKA_CONSUMER)));
+
 
         // Deploy the KafkaWebAppVerticle
         vertx.deployVerticle(new KafkaWebAppVerticle(producer), res -> {
             if (res.succeeded()) {
-                System.out.println("KafkaWebAppVerticle deployed successfully.");
+                LOG.info("KafkaWebAppVerticle deployed successfully.");
             } else {
-                System.err.println("Failed to deploy KafkaWebAppVerticle: " + res.cause());
+                LOG.error("Failed to deploy KafkaWebAppVerticle: {}", res.cause().getMessage());
+            }
+        });
+
+        vertx.deployVerticle(new KafkaConsumerVerticle(consumer, "notifications", authorService), res -> {
+            if (res.succeeded()) {
+                LOG.info("KafkaConsumerVerticle deployed successfully.");
+                authorService.initRepository();
+            } else {
+                LOG.error("Failed to deploy KafkaConsumerVerticle: {}", res.cause().getMessage());
             }
         });
 

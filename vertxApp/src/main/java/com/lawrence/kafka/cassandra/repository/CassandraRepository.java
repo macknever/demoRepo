@@ -1,11 +1,12 @@
-package com.lawrence.kafka.cassandra;
+package com.lawrence.kafka.cassandra.repository;
 
 import java.util.List;
 
 import io.vertx.core.Future;
-import io.vertx.core.Promise;
 
 public interface CassandraRepository<T> {
+
+    Future<Void> initRepository();
 
     Future<Void> insert(T t);
 
