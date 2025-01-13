@@ -25,6 +25,7 @@ public class AuthorService {
     }
 
     public Future<Void> addAuthor(Author author) {
+        
         return authorRepository.insert(author)
                 .onSuccess(v -> LOG.info("Successfully added author {}", author))
                 .onFailure(e -> {
