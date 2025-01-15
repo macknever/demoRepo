@@ -1,0 +1,28 @@
+spring:
+  application:
+    name: springApp
+  cassandra:
+    keyspace-name: main
+    username: lPEdKneQrnIRSQNjMxyMGwAZ
+    password: 74kqpCg.ZwB5BcELCxbqLqfJfL_3Kqr9m_GmB6G.xTRL3ry.aFmPXs5NW2Ql0OJojisg318oiEvgd1AtSwRzdXKlutPa0hk6JDW8l-4lpA0byTxcbDfZhKu5MA+kjZOL
+    schema-action: create_if_not_exists
+    request:
+      timeout: 10s
+    connection:
+      connect-timeout: 10s
+      init-query-timeout: 10s
+
+  main:
+    allow-circular-references: true
+
+datastax.astra:
+  secure-connect-bundle: bundle/scb.zip
+  author-data-path: /Users/lawrence_li/Documents/11_Code/02_Java/demoRepo/data-loader-spring/src/main/resources/data/author_data.txt
+  work-data-path: data/works_data.txt
+#  partial-work-path: data/partial_work_data.txt
+astra.db:
+  id: a5e6d75c-ad29-4b23-baaf-e4470c18b738-1
+  region: us-east1
+  keyspace: main
+  application.token: AstraCS:lPEdKneQrnIRSQNjMxyMGwAZ:42a4e61a3eb9f83dc65260fdbba3bd2e4408dabbd197d10f5d3158cb8880e867
+

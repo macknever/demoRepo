@@ -1,11 +1,12 @@
 package com.lawrence.dataloaderspring;
 
-import com.lawrence.dataloaderspring.model.Author;
-import com.lawrence.dataloaderspring.model.AuthorRepository;
-import com.lawrence.dataloaderspring.model.Work;
-import com.lawrence.dataloaderspring.model.WorkRepository;
-
-import jakarta.annotation.PostConstruct;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.util.stream.Stream;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -16,19 +17,17 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import java.io.BufferedWriter;
-import java.io.File;
-import java.io.FileWriter;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
-import java.util.stream.Stream;
+import com.lawrence.dataloaderspring.model.Author;
+import com.lawrence.dataloaderspring.model.AuthorRepository;
+import com.lawrence.dataloaderspring.model.Work;
+import com.lawrence.dataloaderspring.model.WorkRepository;
+
+import jakarta.annotation.PostConstruct;
 
 @SpringBootApplication
 public class DataLoaderSpringApplication {
 
-    private final static Logger LOG = LoggerFactory.getLogger(DataLoaderSpringApplication.class);
+    private static final Logger LOG = LoggerFactory.getLogger(DataLoaderSpringApplication.class);
 
     @Autowired
     AuthorRepository authorRepository;
