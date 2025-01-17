@@ -1,5 +1,4 @@
-package com.lawrence.kafka.vertxDemo;
-
+package com.globalrelay.nucleus.testrail;
 
 import java.io.File;
 import java.io.IOException;
@@ -19,12 +18,14 @@ import org.junit.jupiter.api.extension.BeforeTestExecutionCallback;
 import org.junit.jupiter.api.extension.ExtensionContext;
 import org.junit.jupiter.api.extension.TestWatcher;
 import org.junit.platform.commons.support.AnnotationSupport;
+import org.junit.platform.launcher.TestExecutionListener;
+import org.junit.platform.launcher.TestPlan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class TestRailExtension
         implements BeforeAllCallback, BeforeTestExecutionCallback, AfterTestExecutionCallback, TestWatcher,
-        AfterAllCallback {
+        AfterAllCallback, TestExecutionListener {
     private static final Logger LOG = LoggerFactory.getLogger(TestRailExtension.class);
     private static final String CSV_FILE_EXTENSION = ".csv";
     private static final Pattern TESTCASE_PREFIX = Pattern.compile("([cC])");
@@ -93,6 +94,11 @@ public class TestRailExtension
     public void beforeAll(ExtensionContext extensionContext) {
         LOG.info("START TEST PLAN: {}", extensionContext.getDisplayName());
         testId2Result = new ConcurrentHashMap<>();
+    }
+
+    @Override
+    public void testPlanExecutionFinished(TestPlan testPlan) {
+        LOG.info("Test Plan finished: {}", testPlan);
     }
 
     @Override
