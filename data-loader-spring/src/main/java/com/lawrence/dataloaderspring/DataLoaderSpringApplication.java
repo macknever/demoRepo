@@ -29,17 +29,17 @@ public class DataLoaderSpringApplication {
 
     private static final Logger LOG = LoggerFactory.getLogger(DataLoaderSpringApplication.class);
 
-    @Autowired
-    AuthorRepository authorRepository;
+    //    @Autowired
+    //    AuthorRepository authorRepository;
 
-    @Autowired
-    WorkRepository workRepository;
-
-    @Value("${datastax.astra.author-data-path}")
-    String authorPath;
-
-    @Value("${datastax.astra.work-data-path}")
-    String workPath;
+    //    @Autowired
+    //    WorkRepository workRepository;
+    //
+    //    @Value("${datastax.astra.author-data-path}")
+    //    String authorPath;
+    //
+    //    @Value("${datastax.astra.work-data-path}")
+    //    String workPath;
 
     //    @Value("${datastax.astra.partial-work-path}")
     //    String partialPath;
@@ -48,73 +48,73 @@ public class DataLoaderSpringApplication {
         SpringApplication.run(DataLoaderSpringApplication.class, args);
     }
 
-    @PostConstruct
-    public void save() {
-        initAuthor();
-    }
-
-    private void initAuthor() {
-        Path dataPath = Paths.get(authorPath);
-        //        String fullPath = getClass().getClassLoader().getResource(workPath).getPath();
-        //        LOG.info("fullPath: {}", fullPath);
-        try (Stream<String> data = Files.lines(dataPath)) {
-            BufferedWriter writer = new BufferedWriter(new FileWriter(dataPath.toString(), true));
-            data.limit(10).forEach(line -> {
-                try {
-                    writer.write(line + "\n");
-                    LOG.info("saving to partial work: {}", line.substring(0, 10));
-
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-            writer.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        try (Stream<String> authorData = Files.lines(dataPath)) {
-            authorData.limit(10).forEach(lines -> {
-                String authorStr = lines.substring(lines.indexOf("{"));
-                try {
-                    JSONObject jsonObject = new JSONObject(authorStr);
-                    Author author = new Author();
-                    author.setName(jsonObject.optString("name"));
-                    author.setPersonalName(jsonObject.optString("personalName"));
-                    author.setId(jsonObject.optString("key").replace("/authors/", ""));
-                    LOG.info("Saving author: {}", author.getName());
-                    authorRepository.save(author);
-
-                } catch (JSONException e) {
-                    throw new RuntimeException(e);
-                }
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void initWork() {
-        Path wPath = Paths.get(workPath);
-
-
-        try (Stream<String> workData = Files.lines(wPath)) {
-            workData.limit(1000).forEach(line -> {
-                String jsonString = line.substring(line.indexOf("{"));
-                JSONObject workJson = new JSONObject(jsonString);
-                Work work = new Work();
-                work.setWork(workJson.optString("key").replace("/works/", ""));
-                work.setCover(workJson.optString("covers"));
-                work.setAuthor(workJson.optJSONArray("authors").optJSONObject(0)
-                        .optJSONObject("author")
-                        .optString("key").replace("/authors/", ""));
-                work.setTitle(workJson.optString("title"));
-                LOG.info("saving work: {}", work.getTitle());
-                workRepository.save(work);
-
-            });
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
+    //    @PostConstruct
+    //    public void save() {
+    //        initAuthor();
+    //    }
+    //
+    //    private void initAuthor() {
+    //        Path dataPath = Paths.get(authorPath);
+    //        //        String fullPath = getClass().getClassLoader().getResource(workPath).getPath();
+    //        //        LOG.info("fullPath: {}", fullPath);
+    //        try (Stream<String> data = Files.lines(dataPath)) {
+    //            BufferedWriter writer = new BufferedWriter(new FileWriter(dataPath.toString(), true));
+    //            data.limit(10).forEach(line -> {
+    //                try {
+    //                    writer.write(line + "\n");
+    //                    LOG.info("saving to partial work: {}", line.substring(0, 10));
+    //
+    //                } catch (IOException e) {
+    //                    throw new RuntimeException(e);
+    //                }
+    //            });
+    //            writer.close();
+    //        } catch (IOException e) {
+    //            e.printStackTrace();
+    //        }
+    //        try (Stream<String> authorData = Files.lines(dataPath)) {
+    //            authorData.limit(10).forEach(lines -> {
+    //                String authorStr = lines.substring(lines.indexOf("{"));
+    //                try {
+    //                    JSONObject jsonObject = new JSONObject(authorStr);
+    //                    Author author = new Author();
+    //                    author.setName(jsonObject.optString("name"));
+    //                    author.setPersonalName(jsonObject.optString("personalName"));
+    //                    author.setId(jsonObject.optString("key").replace("/authors/", ""));
+    //                    LOG.info("Saving author: {}", author.getName());
+    //                    authorRepository.save(author);
+    //
+    //                } catch (JSONException e) {
+    //                    throw new RuntimeException(e);
+    //                }
+    //            });
+    //        } catch (IOException e) {
+    //            e.printStackTrace();
+    //        }
+    //    }
+    //
+    //    private void initWork() {
+    //        Path wPath = Paths.get(workPath);
+    //
+    //
+    //        try (Stream<String> workData = Files.lines(wPath)) {
+    //            workData.limit(1000).forEach(line -> {
+    //                String jsonString = line.substring(line.indexOf("{"));
+    //                JSONObject workJson = new JSONObject(jsonString);
+    //                Work work = new Work();
+    //                work.setWork(workJson.optString("key").replace("/works/", ""));
+    //                work.setCover(workJson.optString("covers"));
+    //                work.setAuthor(workJson.optJSONArray("authors").optJSONObject(0)
+    //                        .optJSONObject("author")
+    //                        .optString("key").replace("/authors/", ""));
+    //                work.setTitle(workJson.optString("title"));
+    //                LOG.info("saving work: {}", work.getTitle());
+    //                workRepository.save(work);
+    //
+    //            });
+    //        } catch (IOException e) {
+    //            e.printStackTrace();
+    //        }
+    //    }
 
 }

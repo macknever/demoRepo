@@ -7,6 +7,9 @@ import org.springframework.data.cassandra.core.mapping.Column;
 import org.springframework.data.cassandra.core.mapping.PrimaryKeyColumn;
 import org.springframework.data.cassandra.core.mapping.Table;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import lombok.Getter;
 import lombok.Setter;
 
@@ -26,4 +29,14 @@ public class Author {
     @Column("personal_name")
     @CassandraType(type = CassandraType.Name.TEXT)
     private String personalName;
+
+    @Override
+    public String toString() {
+        ObjectMapper objectMapper = new ObjectMapper();
+        try {
+            return objectMapper.writeValueAsString(this);
+        } catch (JsonProcessingException e) {
+            throw new RuntimeException("Failed to convert Author to JSON", e);
+        }
+    }
 }

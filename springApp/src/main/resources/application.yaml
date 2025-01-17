@@ -11,14 +11,25 @@ spring:
     connection:
       connect-timeout: 10s
       init-query-timeout: 10s
-
   main:
     allow-circular-references: true
 
+  kafka:
+    bootstrap-servers: localhost:30092  # Adjust for your local K8s environment
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+    consumer:
+      group-id: my-group-id
+      auto-offset-reset: earliest
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        spring.json.trusted.packages: "*"
+      enable-auto-commit: false
+
 datastax.astra:
   secure-connect-bundle: bundle/scb.zip
-  author-data-path: /Users/lawrence_li/Documents/11_Code/02_Java/demoRepo/data-loader-spring/src/main/resources/data/author_data.txt
-  work-data-path: data/works_data.txt
 #  partial-work-path: data/partial_work_data.txt
 astra.db:
   id: a5e6d75c-ad29-4b23-baaf-e4470c18b738-1
@@ -26,3 +37,6 @@ astra.db:
   keyspace: main
   application.token: AstraCS:lPEdKneQrnIRSQNjMxyMGwAZ:42a4e61a3eb9f83dc65260fdbba3bd2e4408dabbd197d10f5d3158cb8880e867
 
+app:
+  kafka:
+    topic: notifications
