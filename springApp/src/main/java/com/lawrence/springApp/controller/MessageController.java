@@ -25,17 +25,14 @@ public class MessageController {
         this.messageProducerService = messageProducerService;
     }
 
-    @PostMapping(value = "/message/{topic}")
-    public ResponseEntity<String> createNotification(@RequestBody Author author, @PathVariable String topic) {
+    @PostMapping(value = "/messages/{topic}")
+    public ResponseEntity<String> createNotification(@RequestBody String author, @PathVariable String topic) {
 
         if (topic == null || !topic.equals(allowedTopic)) {
             return new ResponseEntity<>("Invalid topic.", HttpStatus.NOT_FOUND);
         }
-        // If id is not provided, generate one
-        if (author.getId() == null) {
-            author.setId(java.util.UUID.randomUUID().toString());
-        }
-        messageProducerService.sendMessage(author.toString());
+
+        messageProducerService.sendMessage(author);
         return new ResponseEntity<>("Notification sent to Kafka.", HttpStatus.CREATED);
     }
 }
