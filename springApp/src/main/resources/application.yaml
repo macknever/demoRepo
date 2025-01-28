@@ -15,8 +15,8 @@ spring:
     allow-circular-references: true
 
   kafka:
-#    bootstrap-servers: localhost:30092
-    bootstrap-servers: local-k8s.dev-globalrelay.net:32123
+    bootstrap-servers: localhost:30092
+ #   bootstrap-servers: local-k8s.dev-globalrelay.net:32123
     # Adjust for your local K8s environment
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
@@ -41,4 +41,4 @@ astra.db:
 
 app:
   kafka:
-    topic: cp.msg-mds.local.ca.nvan.directory.changelog
+    topic: notifications

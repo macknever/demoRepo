@@ -1,6 +1,5 @@
 package com.lawrence.springApp.service;
 
-import org.apache.kafka.clients.consumer.ConsumerRecord;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -18,14 +17,10 @@ public class MessageConsumerService {
         this.authorRepository = authorRepository;
     }
 
-//    @KafkaListener(topics = "${app.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
-//    public void listenMessages(ConsumerRecord<String, String> record) {
-//
-//        authorRepository.save(author);
-//        LOG.info("Messeage stored, {}", author);
-//    }
-//
-//    private Author convertToAuthor(ConsumerRecord<String, String> record) {
-//        record.value().get
-//    }
+    @KafkaListener(topics = "${app.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
+    public void listenMessages(Author author) {
+        authorRepository.save(author);
+        LOG.info("Message stored, {}", author);
+    }
+
 }

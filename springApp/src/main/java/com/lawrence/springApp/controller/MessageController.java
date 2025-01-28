@@ -26,7 +26,7 @@ public class MessageController {
     }
 
     @PostMapping(value = "/messages/{topic}")
-    public ResponseEntity<String> createNotification(@RequestBody String author, @PathVariable String topic) {
+    public ResponseEntity<String> createNotification(@RequestBody Author author, @PathVariable String topic) {
 
         if (topic == null || !topic.equals(allowedTopic)) {
             return new ResponseEntity<>("Invalid topic.", HttpStatus.NOT_FOUND);
