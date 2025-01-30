@@ -1,5 +1,7 @@
 package com.lawrence.kafka.cassandra.service;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -25,9 +27,9 @@ public class AuthorService {
     }
 
     public Future<Void> addAuthor(Author author) {
-        
+
         return authorRepository.insert(author)
-                .onSuccess(v -> LOG.info("Successfully added author {}", author))
+                .onSuccess(v -> LOG.info("Successfully added author {}, at {}", author, new Date().toInstant()))
                 .onFailure(e -> {
                     LOG.error("Failed to add author", e);
                 });

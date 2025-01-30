@@ -1,5 +1,6 @@
 package com.lawrence.kafka.producer;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -19,8 +20,9 @@ import io.vertx.kafka.client.producer.KafkaProducerRecord;
 public class KafkaWebAppVerticle extends AbstractVerticle {
 
     private static final Logger LOG = LoggerFactory.getLogger(KafkaWebAppVerticle.class);
+    private static int eventId = 0;
     private KafkaProducer<String, String> producer;
-    
+
     public KafkaWebAppVerticle(KafkaProducer<String, String> producer) {
         this.producer = producer;
     }
@@ -34,15 +36,14 @@ public class KafkaWebAppVerticle extends AbstractVerticle {
         router.post("/api/messages/:topic")
                 .handler(ctx -> {
                     ctx.request().bodyHandler(body -> {
+                        LOG.info("Received message {} from topic: {}, at {}", body, ctx.pathParam("topic"),
+                                new Date().toInstant());
                         final String currentTopic = ctx.pathParam("topic");
-                        LOG.info("current topic is {}", currentTopic);
                         final String currentContent = body.toString();
                         KafkaProducerRecord<String, String> producerRecord = KafkaProducerRecord.create(currentTopic,
                                 currentContent);
-                        LOG.info("current ctx and content is {}, {}", ctx, currentContent);
-                        LOG.info("Sending record to kafka");
                         producer.send(producerRecord).onSuccess(recordMetadata ->
-                                        LOG.info(
+                                        LOG.debug(
                                                 "Message {} written on topic = {}, partition = {},offset = {} ",
                                                 producerRecord.value(),
                                                 recordMetadata.getTopic(),

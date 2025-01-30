@@ -10,8 +10,18 @@
         </Console>
     </Appenders>
     <Loggers>
-        <Root level="INFO">
-            <AppenderRef ref="CONSOLE" />
+        <!-- Only these loggers will log at INFO -->
+        <Logger name="com.lawrence.kafka.producer.KafkaWebAppVerticle" level="INFO" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+
+        <Logger name="com.lawrence.kafka.cassandra.service.AuthorService" level="INFO" additivity="false">
+            <AppenderRef ref="CONSOLE"/>
+        </Logger>
+
+        <!-- Everything else logs at WARN or above -->
+        <Root level="WARN">
+            <AppenderRef ref="CONSOLE"/>
         </Root>
     </Loggers>
 </Configuration>
