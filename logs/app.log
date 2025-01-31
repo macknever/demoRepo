@@ -1,0 +1,6 @@
+2025-01-31 06:56:16 INFO  [vert.x-eventloop-thread-0] KafkaWebAppVerticle - Received message {
+	"id": "016",
+    "name": "Emily",
+    "personalName": "Emily Hou"
+} from topic: notifications, at 2025-01-31T14:56:16.884Z
+2025-01-31 06:56:17 INFO  [vert.x-eventloop-thread-2] AuthorService - Successfully added author Author[id=016, name=Emily, personalName=Emily Hou], at 2025-01-31T14:56:17.042Z

@@ -8,19 +8,23 @@
         <Console name="CONSOLE">
             <PatternLayout pattern="%level [%thread] %logger{0} - %m%n"/>
         </Console>
+        <!-- 2. File Appender -->
+        <File name="FILE" fileName="logs/app.log" append="true">
+            <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p [%t] %c{1} - %m%n" />
+        </File>
     </Appenders>
     <Loggers>
         <!-- Only these loggers will log at INFO -->
         <Logger name="com.lawrence.kafka.producer.KafkaWebAppVerticle" level="INFO" additivity="false">
-            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="FILE"/>
         </Logger>
 
         <Logger name="com.lawrence.kafka.cassandra.service.AuthorService" level="INFO" additivity="false">
-            <AppenderRef ref="CONSOLE"/>
+            <AppenderRef ref="FILE"/>
         </Logger>
 
         <!-- Everything else logs at WARN or above -->
-        <Root level="WARN">
+        <Root level="INFO">
             <AppenderRef ref="CONSOLE"/>
         </Root>
     </Loggers>
