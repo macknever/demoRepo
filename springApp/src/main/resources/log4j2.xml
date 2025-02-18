@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration xmlns="https://logging.apache.org/xml/ns"
+               xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+               xsi:schemaLocation="
+                   https://logging.apache.org/xml/ns
+                   https://logging.apache.org/xml/ns/log4j-config-2.xsd">
+    <Appenders>
+        <Console name="CONSOLE">
+            <PatternLayout pattern="%level [%thread] %logger{0} - %m%n"/>
+        </Console>
+        <!-- 2. File Appender -->
+        <File name="FILE" fileName="logs/springApp.log" append="true">
+            <PatternLayout pattern=" %-5p [%t] %c{1} - %m%n" />
+        </File>
+    </Appenders>
+    <Loggers>
+        <!-- Only these loggers will log at INFO -->
+        <Logger name="com.lawrence.springApp.controller.MessageController" level="INFO" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </Logger>
+
+        <Logger name="com.lawrence.springApp.service.MessageConsumerService" level="INFO" additivity="false">
+            <AppenderRef ref="FILE"/>
+        </Logger>
+
+        <!-- Everything else logs at WARN or above -->
+        <Root level="INFO">
+            <AppenderRef ref="CONSOLE"/>
+        </Root>
+    </Loggers>
+</Configuration>

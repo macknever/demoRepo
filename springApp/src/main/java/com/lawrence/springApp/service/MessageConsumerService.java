@@ -1,5 +1,7 @@
 package com.lawrence.springApp.service;
 
+import java.util.Date;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.kafka.annotation.KafkaListener;
@@ -20,7 +22,7 @@ public class MessageConsumerService {
     @KafkaListener(topics = "${app.kafka.topic}", groupId = "${spring.kafka.consumer.group-id}")
     public void listenMessages(Author author) {
         authorRepository.save(author);
-        LOG.info("Message stored, {}", author);
+        LOG.info("Message stored, {} at {}", author, new Date().toInstant());
     }
 
 }

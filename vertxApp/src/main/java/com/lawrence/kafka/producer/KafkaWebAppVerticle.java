@@ -36,7 +36,7 @@ public class KafkaWebAppVerticle extends AbstractVerticle {
         router.post("/api/messages/:topic")
                 .handler(ctx -> {
                     ctx.request().bodyHandler(body -> {
-                        LOG.info("Received message {} from topic: {}, at {}", body, ctx.pathParam("topic"),
+                        LOG.info("Received message from topic: {}, at {}", ctx.pathParam("topic"),
                                 new Date().toInstant());
                         final String currentTopic = ctx.pathParam("topic");
                         final String currentContent = body.toString();

@@ -1,3 +1,5 @@
+
+
 spring:
   application:
     name: springApp
@@ -15,20 +17,20 @@ spring:
     allow-circular-references: true
 
   kafka:
-    bootstrap-servers: localhost:30092
- #   bootstrap-servers: local-k8s.dev-globalrelay.net:32123
+   # bootstrap-servers: localhost:30092
+    bootstrap-servers: local-k8s.dev-globalrelay.net:32123
     # Adjust for your local K8s environment
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
     consumer:
-      group-id: my-group-id
-      auto-offset-reset: earliest
+      group-id: my-group
+      auto-offset-reset: latest
       key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
       value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
       properties:
         spring.json.trusted.packages: "*"
-      enable-auto-commit: false
+      enable-auto-commit: true
 
 datastax.astra:
   secure-connect-bundle: bundle/scb.zip
@@ -41,4 +43,6 @@ astra.db:
 
 app:
   kafka:
-    topic: notifications
+    topic: cp.msg-mds.local.ca.nvan.directory.changelog
+logging:
+  config: classpath:log4j2.xml

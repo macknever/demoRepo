@@ -11,8 +11,9 @@ object Author {
         .post(session => {
           val topic: String = session("topic").as[String]
 
-          s"/messages/api/$topic"
+          s"/api/messages/$topic"
         })
+        .header("Content-type", "application/json")
         .body(
           StringBody(session => {
             val id = session("id").as[String]

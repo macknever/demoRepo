@@ -23,6 +23,7 @@ import io.vertx.kafka.client.producer.KafkaProducer;
 
 public class Main {
     private static final Logger LOG = LoggerFactory.getLogger(Main.class);
+    private static final String ALLOWED_TOPIC = "cp.msg-mds.local.ca.nvan.directory.changelog";
 
     public static void main(String[] args) {
         // Create a Vertx instance
@@ -51,7 +52,7 @@ public class Main {
             }
         });
 
-        vertx.deployVerticle(new KafkaConsumerVerticle(consumer, "notifications", authorService), res -> {
+        vertx.deployVerticle(new KafkaConsumerVerticle(consumer, ALLOWED_TOPIC, authorService), res -> {
             if (res.succeeded()) {
                 LOG.info("KafkaConsumerVerticle deployed successfully.");
                 authorService.initRepository();
