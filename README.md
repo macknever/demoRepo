@@ -135,6 +135,10 @@ COMMIT;
 - Uses **PAXOS consensus** (slower than normal writes).
 - No rollback support.
 
+Transaction is only atomic in partition level. e.g. if consistency level is set to QUORUM and RF=3, a write is 
+successful if it receives acknowledgments from 2 nodes. But if one succeed one fail, the failed one won't change and 
+also the succeeded one won't roll back.
+
 #### **Example in Cassandra (CAS Transaction)**
 ```sql
 UPDATE accounts SET balance = balance - 100 WHERE user_id = 101 IF balance >= 100;
@@ -183,7 +187,7 @@ SELECT * FROM orders_by_customer WHERE customer_id = 101 ORDER BY order_time DES
 ```
 - Sorting works because `order_time` is the **Clustering Key**.
 
-🔴 **Cassandra cannot sort across partitions.**
+ **Cassandra cannot sort across partitions.**
 
 ---
 
@@ -194,7 +198,7 @@ SELECT * FROM orders_by_customer WHERE customer_id = 101 ORDER BY order_time DES
 - **Use pre-aggregated counters for grouping.**
 - **Filter and sort only within partitions.**
 
-🎯 **Cassandra is best for high-speed, large-scale distributed systems.** 🚀
+ **Cassandra is best for high-speed, large-scale distributed systems.** 🚀
 
 ## references
 
@@ -203,3 +207,5 @@ https://stackoverflow.com/questions/26757287/results-pagination-in-cassandra-cql
 https://docs.datastax.com/en/developer/java-driver/2.1/manual/paging/index.html
 
 https://github.com/jusexton/spring-cassandra-pagination-example
+
+https://www.youtube.com/watch?v=MX0ewD3o5wk
