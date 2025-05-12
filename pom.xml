@@ -20,6 +20,7 @@
         <module>vertxApp</module>
         <module>springApp</module>
         <module>performance-tests</module>
+        <module>Thrift-demo</module>
     </modules>
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
