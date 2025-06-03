@@ -15,17 +15,18 @@ import com.lawrence.random.randomservice.Range;
 /**
  * Simple Java client for the RandomService Thrift service.
  */
-public class RandomServiceClient {
-    private static final Logger LOG = LoggerFactory.getLogger(RandomServiceClient.class);
+public class RandomServiceClientTcp implements RandomNumberService {
+    private static final Logger LOG = LoggerFactory.getLogger(RandomServiceClientTcp.class);
     private final String host;
     private final int port;
 
-    public RandomServiceClient(final String host, final int port) {
+    public RandomServiceClientTcp(final String host, final int port) {
         this.host = host;
         this.port = port;
     }
 
-    public int getRandomInt(int min, int max) {
+    @Override
+    public int getRandom(int min, int max) {
         final Range range = new Range(min, max);
         int result = -Integer.MAX_VALUE;
         try (TTransport transport = new TSocket(host, port)) {
