@@ -12,7 +12,7 @@ public class Main {
 
         final RandomServiceClientTcp randomServiceClient = new RandomServiceClientTcp(host, tcpPort);
 
-        final int small = 10;
+        final int small = 1000;
         final int large = 100;
 
         int ranTcp = randomServiceClient.getRandom(small, large);

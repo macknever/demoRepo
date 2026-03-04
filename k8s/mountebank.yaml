@@ -1,0 +1,40 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: mountebank
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mountebank
+  template:
+    metadata:
+      labels:
+        app: mountebank
+    spec:
+      containers:
+        - name: mountebank
+          image: bbyars/mountebank:latest # Use the official/active image
+          ports:
+            - containerPort: 2525 # API Port
+            - containerPort: 3025 # SMTP Imposter Port
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mountebank-service
+spec:
+  type: NodePort
+  selector:
+    app: mountebank
+  ports:
+    - name: api
+      protocol: TCP
+      port: 2525
+      targetPort: 2525
+      nodePort: 32525
+    - name: smtp
+      protocol: TCP
+      port: 3025
+      targetPort: 3025
+      nodePort: 30025

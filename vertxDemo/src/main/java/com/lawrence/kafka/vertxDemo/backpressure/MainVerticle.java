@@ -2,6 +2,7 @@ package com.lawrence.kafka.vertxDemo.backpressure;
 
 import io.vertx.core.AbstractVerticle;
 import io.vertx.core.DeploymentOptions;
+import io.vertx.core.ThreadingModel;
 import io.vertx.core.Vertx;
 
 public class MainVerticle extends AbstractVerticle {
@@ -10,7 +11,7 @@ public class MainVerticle extends AbstractVerticle {
         Vertx vertx = Vertx.vertx();
 
         DeploymentOptions opts = new DeploymentOptions()
-                .setWorker(false);
+                .setThreadingModel(ThreadingModel.EVENT_LOOP);
 
         // Deploy the producer and consumer verticles
         vertx.deployVerticle(new ProducerVerticle(), opts);

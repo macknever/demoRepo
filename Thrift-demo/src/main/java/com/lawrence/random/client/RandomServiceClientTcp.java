@@ -1,5 +1,8 @@
 package com.lawrence.random.client;
 
+import java.sql.SQLOutput;
+
+import org.apache.thrift.TException;
 import org.apache.thrift.protocol.TBinaryProtocol;
 import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
@@ -7,7 +10,6 @@ import org.apache.thrift.transport.TTransport;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.lawrence.random.randomservice.InvalidRandomRange;
 import com.lawrence.random.randomservice.RandomNumberStruct;
 import com.lawrence.random.randomservice.RandomService;
 import com.lawrence.random.randomservice.Range;
@@ -26,9 +28,8 @@ public class RandomServiceClientTcp implements RandomNumberService {
     }
 
     @Override
-    public int getRandom(int min, int max) {
+    public int getRandom(int min, int max){
         final Range range = new Range(min, max);
-        int result = -Integer.MAX_VALUE;
         try (TTransport transport = new TSocket(host, port)) {
             transport.open();
 
@@ -42,13 +43,12 @@ public class RandomServiceClientTcp implements RandomNumberService {
             RandomNumberStruct random = client.roll(range);
 
             LOG.info("Rolled value = {} createdAt: {}\n", random.getRandomNumber(), random.getCreatedAt());
-            result = random.getRandomNumber();
-        } catch (InvalidRandomRange irr) {
-            LOG.error("Invalid range provided: {}", irr.getDesc());
-        } catch (Exception e) {
-            e.printStackTrace();
+            return random.getRandomNumber();
+        } catch (TException irr) {
+            System.out.println("Invalid range provided");
         }
-        return result;
+
+        return min;
     }
 
 }

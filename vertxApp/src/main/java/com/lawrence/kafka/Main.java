@@ -29,7 +29,6 @@ public class Main {
         // Create a Vertx instance
         Injector injector = MainInjector.getInstance();
 
-
         Vertx vertx = injector.getInstance(Vertx.class);
 
         KafkaProducer<String, String> producer =
@@ -41,7 +40,6 @@ public class Main {
         KafkaConsumer<String, String> consumer =
                 injector.getInstance(Key.get(new TypeLiteral<>() {
                 }, Names.named(KAFKA_CONSUMER)));
-
 
         // Deploy the KafkaWebAppVerticle
         vertx.deployVerticle(new KafkaWebAppVerticle(producer), res -> {

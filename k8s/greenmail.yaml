@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: greenmail
+  labels:
+    app: greenmail
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: greenmail
+  template:
+    metadata:
+      labels:
+        app: greenmail
+    spec:
+      containers:
+        - name: greenmail
+          image: greenmail/standalone:latest
+          ports:
+            - containerPort: 3025 # SMTP
+            - containerPort: 3110 # POP3
+            - containerPort: 3143 # IMAP
+            - containerPort: 8080 # HTTP (API/UI if applicable)
+          env:
+            - name: GREENMAIL_OPTS
+              # -Dgreenmail.setup.test.all: starts all protocols
+              # -Dgreenmail.hostname: allows external connections
+              # -Dgreenmail.auth.disabled: makes testing easier (optional)
+              value: "-Dgreenmail.setup.test.all -Dgreenmail.hostname=0.0.0.0 -Dgreenmail.users=user2@domain1.com:password -Dgreenmail.verbose -Dgreenmail.smtp.address.strict"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: greenmail-service
+spec:
+  type: NodePort
+  selector:
+    app: greenmail
+  ports:
+    - name: smtp
+      protocol: TCP
+      port: 3025
+      targetPort: 3025
+      nodePort: 30025
+    - name: pop3
+      protocol: TCP
+      port: 3110
+      targetPort: 3110
+      nodePort: 30110
+    - name: imap
+      protocol: TCP
+      port: 3143
+      targetPort: 3143
+      nodePort: 30143
+    - name: api
+      port: 8080
+      targetPort: 8080
+      nodePort: 30080

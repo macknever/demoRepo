@@ -10,7 +10,7 @@ public class PropertiesInjector {
     }
 
     private static class LAZY {
-        private static Injector INSTANCE = Guice.createInjector(new PropertiesModule());
+        private static final Injector INSTANCE = Guice.createInjector(new PropertiesModule());
     }
 
     public static Injector getInstance() {
