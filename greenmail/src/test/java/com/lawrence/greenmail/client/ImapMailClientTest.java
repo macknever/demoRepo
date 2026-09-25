@@ -25,19 +25,14 @@ import jakarta.mail.internet.MimeMessage;
 
 class ImapMailClientTest {
     @Test
-    void requiresStartTlsWithTheCorrectProtocolProperties() {
-        var properties = ImapMailClient.mailProperties(true);
-        assertThat(properties).containsEntry("mail.imap.starttls.enable", "true")
-                .containsEntry("mail.imap.starttls.required", "true")
-                .containsEntry("mail.imap.ssl.checkserveridentity", "true")
-                .containsEntry("mail.imap.peek", "true");
-        assertThat(ImapMailClient.mailProperties(false))
+    void usesImapsProperties() {
+        assertThat(ImapMailClient.mailProperties())
                 .containsEntry("mail.imaps.ssl.checkserveridentity", "true")
-                .doesNotContainKey("mail.imap.starttls.enable");
+                .containsEntry("mail.imaps.peek", "true");
     }
 
     @Test
-    void decodesNestedMimeWithoutTreatingTextAttachmentsAsBody() throws Exception {
+    void readsAttachmentNamesFromNestedMime() throws Exception {
         String raw = """
                 From: sender@example.com
                 To: nucleus.uc@dev-globalrelay.net
@@ -68,14 +63,11 @@ class ImapMailClientTest {
                 """;
         var content = ImapMailClient.readContent(message(raw));
         assertThat(content.subject()).isEqualTo("smoke-123");
-        assertThat(content.messageId()).isEqualTo("<smoke-123@example.com>");
-        assertThat(content.text()).contains("Description: smoke-123")
-                .doesNotContain("attachment-only-marker", "<p>");
         assertThat(content.attachmentNames()).containsExactly("notes.txt");
     }
 
     @Test
-    void decodesQuotedPrintablePlainTextWithoutAttachments() throws Exception {
+    void returnsEmptyNamesForEmailWithoutAttachments() throws Exception {
         var content = ImapMailClient.readContent(message("""
                 Subject: smoke-456
                 MIME-Version: 1.0
@@ -84,9 +76,7 @@ class ImapMailClientTest {
 
                 Description: caf=C3=A9 smoke-456
                 """));
-        assertThat(content.text()).contains("Description: café smoke-456");
         assertThat(content.attachmentNames()).isEmpty();
-        assertThat(content.messageId()).isNull();
     }
 
     @Test
@@ -101,7 +91,7 @@ class ImapMailClientTest {
                 new Message[] {wrongSubject}, new Message[] {expected});
         try (var client = new ImapMailClient(store, "INBOX")) {
             assertThat(client.awaitEmail("smoke-123",
-                    Duration.ofSeconds(1), Duration.ofMillis(1)).text()).contains("expected");
+                    Duration.ofSeconds(1), Duration.ofMillis(1)).subject()).isEqualTo("smoke-123");
         }
         verify(folder, times(2)).open(Folder.READ_ONLY);
         verify(folder, times(2)).close(false);

@@ -15,9 +15,9 @@ import static org.mockito.Mockito.when;
 
 class MailValidatorTest {
     @Test
-    void validatesBodyUsingInjectedClient() throws Exception {
+    void validatesAttachmentUsingInjectedClient() throws Exception {
         var client = mock(ImapMailClient.class);
-        var email = new ImapMailClient.EmailContent("unique-subject", "id", "report complete", List.of());
+        var email = new ImapMailClient.EmailContent("unique-subject", List.of("report.zip"));
         when(client.awaitEmail("unique-subject", Duration.ofSeconds(60), Duration.ofSeconds(2)))
                 .thenReturn(email);
         var injector = Guice.createInjector(new AbstractModule() {
@@ -27,9 +27,9 @@ class MailValidatorTest {
             }
         });
         var validator = injector.getInstance(MailValidator.class);
-        assertThat(validator.validate("unique-subject", "complete", Duration.ofSeconds(60))).isEqualTo(email);
+        assertThat(validator.validate("unique-subject", "report.zip", Duration.ofSeconds(60))).isEqualTo(email);
         assertThat(validator.validate("unique-subject", null, Duration.ofSeconds(60))).isEqualTo(email);
-        assertThatThrownBy(() -> validator.validate("unique-subject", "missing", Duration.ofSeconds(60)))
-                .isInstanceOf(AssertionError.class).hasMessageContaining("expected plain-text body");
+        assertThatThrownBy(() -> validator.validate("unique-subject", "REPORT.zip", Duration.ofSeconds(60)))
+                .isInstanceOf(AssertionError.class).hasMessageContaining("Expected attachment: REPORT.zip");
     }
 }

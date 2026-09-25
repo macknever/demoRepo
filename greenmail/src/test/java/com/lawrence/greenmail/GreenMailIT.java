@@ -18,7 +18,6 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 import java.util.List;
 import java.util.stream.Stream;
 
-import com.lawrence.greenmail.util.MailValidator;
 
 class GreenMailIT {
     private static final Logger LOG = LoggerFactory.getLogger(GreenMailIT.class);
@@ -100,12 +99,6 @@ class GreenMailIT {
                 .then()
                 .statusCode(statusCode)
                 .extract().body().asString();
-    }
-
-    @Test
-    @org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable(named = "SMOKE_IMAP_SUBJECT", matches = ".+")
-    void testCarbonio() throws Exception {
-        MailValidator.main(new String[] {System.getenv("SMOKE_IMAP_SUBJECT")});
     }
 
     private static Stream<Arguments> providesRecipientAndResponse() {

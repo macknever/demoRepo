@@ -1,14 +1,48 @@
-# Validate mailbox delivery
+# Validate mailbox delivery with JUnit
 
-`ImapMailClient` reads a mailbox through Jakarta Mail. `MailValidator` waits up to
-60 seconds for an **exact subject**, then optionally checks a plain-text body
-substring. Send a report with a fresh UUID in its subject before running the
-validator. The validator only reads mail; it does not send, delete, or mark it read.
-Text attachments are excluded from body validation. HTML-only bodies are not
-supported by the optional plain-text assertion.
+`ImapMailClient` reads mail using IMAPS (implicit TLS). `MailValidator` waits for
+an exact subject and checks that the received email contains an attachment with
+an exact, case-sensitive filename. It does not send, delete, or mark mail read.
+Use a fresh UUID in the report subject to avoid matching an older message.
 
-From the repository root, run this in an authenticated Secret Server shell.
-Replace the secret ID with your mailbox secret ID:
+## Run from IntelliJ
+
+Open `src/test/java/com/lawrence/greenmail/util/MailValidatorIT.java` and create a
+JUnit run configuration for `receivesEmailWithExpectedAttachment` using the
+`greenmail` module. Under **Run → Edit Configurations → Environment variables**,
+set:
+
+```text
+SMOKE_IMAP_PASSWORD=your-mailbox-password
+SMOKE_IMAP_SUBJECT=YOUR EXACT SUBJECT WITH UUID
+SMOKE_IMAP_ATTACHMENT=report.zip
+```
+
+Send the report first, then run the test. It waits up to 60 seconds for delivery.
+An absent email or mismatched filename fails the test. Other attachments are
+allowed. No program arguments or main class are needed.
+
+Retrieve the password with your authenticated Secret Server CLI, then paste the
+value into the local configuration. IntelliJ does not execute shell commands in
+its environment-variable field. Do not share a run configuration containing the
+password or store it as a project file.
+
+| Environment variable | Default |
+| --- | --- |
+| `SMOKE_IMAP_HOST` | `carbonio.dev-globalrelay.net` |
+| `SMOKE_IMAP_PORT` | `993` |
+| `SMOKE_IMAP_USERNAME` | `nucleus.uc@dev-globalrelay.net` |
+| `SMOKE_IMAP_PASSWORD` | Required |
+| `SMOKE_IMAP_FOLDER` | `INBOX` |
+| `SMOKE_IMAP_SUBJECT` | Required for the live test |
+| `SMOKE_IMAP_ATTACHMENT` | Required for the live test |
+
+Only IMAPS is supported. The client verifies the TLS server identity using the
+JVM trust store. Username/password authentication needs no explicit mechanism.
+
+## Run from a terminal
+
+From the repository root, in an authenticated Secret Server shell:
 
 ```bash
 (
@@ -17,49 +51,28 @@ Replace the secret ID with your mailbox secret ID:
   SMOKE_IMAP_PASSWORD="$(secretserver-tool --secret-id=YOUR_MAILBOX_SECRET_ID --field Password --get-field)"
   test -n "$SMOKE_IMAP_PASSWORD"
   export SMOKE_IMAP_PASSWORD
-
-  mvn -pl greenmail compile exec:java \
-    -Dexec.mainClass=com.lawrence.greenmail.util.MailValidator \
-    -Dexec.args='"YOUR EXACT SUBJECT WITH UUID" "expected body substring"'
+  export SMOKE_IMAP_SUBJECT='YOUR EXACT SUBJECT WITH UUID'
+  export SMOKE_IMAP_ATTACHMENT='report.zip'
+  mvn -pl greenmail -Dtest=MailValidatorIT test
 )
 ```
 
-Omit the second argument to check delivery and subject only. The password is
-read from the environment, never a Maven argument or a committed file. No token
-or explicit mail authentication mechanism is needed for mailbox password login.
-
-| Environment variable | Default |
-| --- | --- |
-| `SMOKE_IMAP_HOST` | `carbonio.dev-globalrelay.net` |
-| `SMOKE_IMAP_USERNAME` | `nucleus.uc@dev-globalrelay.net` |
-| `SMOKE_IMAP_PASSWORD` | Required |
-| `SMOKE_IMAP_MODE` | `imaps` |
-| `SMOKE_IMAP_PORT` | `993` for IMAPS; `143` for STARTTLS |
-| `SMOKE_IMAP_FOLDER` | `INBOX` |
-
-For STARTTLS, add `export SMOKE_IMAP_MODE=starttls` inside the subshell before
-Maven. Leave the port unset for port 143, or set it explicitly for your server.
-Both modes verify the TLS server identity and use the JVM trust store. STARTTLS
-is required in that mode; there is no fallback to an unencrypted connection.
-
-`ImapMailModule` provides an unscoped client for Guice tests. Inject a
-`Provider<ImapMailClient>` and close each connection with try-with-resources:
-
-```java
-try (var client = clientProvider.get()) {
-    new MailValidator(client).validate(subject, expectedText, Duration.ofSeconds(60));
-}
-```
-
-Run the isolated tests without mailbox credentials:
+The live test is explicitly selected; normal Surefire unit-test runs exclude
+`*IT` classes. Run the isolated unit tests without credentials:
 
 ```bash
 mvn -pl greenmail -Dtest=ImapMailClientTest,MailValidatorTest test
 ```
 
-The existing Carbonio test is opt-in. Set `SMOKE_IMAP_SUBJECT` to the exact subject
-and provide the same connection environment, then run:
+## Use the utility in another test
 
-```bash
-mvn -pl greenmail '-Dtest=GreenMailIT#testCarbonio' test
+Create an injector with `ImapMailModule` and inject a `Provider<ImapMailClient>`.
+Each test owns its connection:
+
+```java
+try (var client = clientProvider.get()) {
+    new MailValidator(client).validate(subject, "report.zip", Duration.ofSeconds(60));
+}
 ```
+
+Pass `null` for the filename to check only whether the exact subject arrived.

@@ -17,7 +17,7 @@ import jakarta.mail.Store;
 import jakarta.mail.internet.MimeUtility;
 import jakarta.mail.search.SubjectTerm;
 
-/** Read-only IMAP client with TLS. Reading mail never marks it seen or deletes it. */
+/** Read-only IMAPS client. Reading mail never marks it seen or deletes it. */
 public final class ImapMailClient implements AutoCloseable {
     private final Store store;
     private final String folderName;
@@ -27,9 +27,9 @@ public final class ImapMailClient implements AutoCloseable {
         this.folderName = requireText(folderName, "folderName");
     }
 
-    /** Connect using implicit TLS or required STARTTLS and mailbox credentials. */
+    /** Connect using IMAPS and mailbox credentials. */
     public ImapMailClient(String host, int port, String username, String password,
-            String folderName, boolean startTls) throws MessagingException {
+            String folderName) throws MessagingException {
         this.folderName = requireText(folderName, "folderName");
         requireText(host, "host");
         requireText(username, "username");
@@ -37,8 +37,7 @@ public final class ImapMailClient implements AutoCloseable {
         if (port < 1 || port > 65535) {
             throw new IllegalArgumentException("Invalid IMAP port");
         }
-        String protocol = startTls ? "imap" : "imaps";
-        store = Session.getInstance(mailProperties(startTls)).getStore(protocol);
+        store = Session.getInstance(mailProperties()).getStore("imaps");
         try {
             store.connect(host, port, username, password);
         } catch (MessagingException failure) {
@@ -51,18 +50,14 @@ public final class ImapMailClient implements AutoCloseable {
         }
     }
 
-    static Properties mailProperties(boolean startTls) {
-        String prefix = startTls ? "mail.imap." : "mail.imaps.";
+    static Properties mailProperties() {
+        String prefix = "mail.imaps.";
         Properties properties = new Properties();
         properties.setProperty(prefix + "ssl.checkserveridentity", "true");
         properties.setProperty(prefix + "peek", "true");
         properties.setProperty(prefix + "connectiontimeout", "10000");
         properties.setProperty(prefix + "timeout", "10000");
         properties.setProperty(prefix + "writetimeout", "10000");
-        if (startTls) {
-            properties.setProperty(prefix + "starttls.enable", "true");
-            properties.setProperty(prefix + "starttls.required", "true");
-        }
         return properties;
     }
 
@@ -112,28 +107,23 @@ public final class ImapMailClient implements AutoCloseable {
     }
 
     static EmailContent readContent(Message message) throws MessagingException, IOException {
-        StringBuilder text = new StringBuilder();
         List<String> attachments = new ArrayList<>();
-        readPart(message, text, attachments);
-        String[] ids = message.getHeader("Message-ID");
-        return new EmailContent(message.getSubject(), ids == null ? null : ids[0], text.toString(),
-                List.copyOf(attachments));
+        readPart(message, attachments);
+        return new EmailContent(message.getSubject(), List.copyOf(attachments));
     }
 
-    private static void readPart(Part part, StringBuilder text, List<String> attachments)
+    private static void readPart(Part part, List<String> attachments)
             throws MessagingException, IOException {
         String fileName = part.getFileName();
         if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || fileName != null) {
-            // An attached text file must not accidentally satisfy assertions about the message body.
             if (fileName != null) {
                 attachments.add(MimeUtility.decodeText(fileName));
             }
-        } else if (part.isMimeType("text/plain")) {
-            text.append((String) part.getContent()).append('\n');
+
         } else if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();
             for (int i = 0; i < multipart.getCount(); i++) {
-                readPart(multipart.getBodyPart(i), text, attachments);
+                readPart(multipart.getBodyPart(i), attachments);
             }
         }
     }
@@ -150,6 +140,6 @@ public final class ImapMailClient implements AutoCloseable {
         store.close();
     }
 
-    public record EmailContent(String subject, String messageId, String text, List<String> attachmentNames) {
+    public record EmailContent(String subject, List<String> attachmentNames) {
     }
 }
