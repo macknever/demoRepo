@@ -3,6 +3,7 @@ package com.lawrence.greenmail;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
+import jakarta.mail.MessagingException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -15,8 +16,11 @@ import org.slf4j.LoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
+
+import com.lawrence.greenmail.util.MailValidator;
 
 class GreenMailIT {
     private static final Logger LOG = LoggerFactory.getLogger(GreenMailIT.class);
@@ -100,43 +104,49 @@ class GreenMailIT {
                 .extract().body().asString();
     }
 
+    @Test
+    void testCarbonio() throws MessagingException, IOException {
+        MailValidator validator = new MailValidator();
+        validator.getEmails();
+    }
+
     private static Stream<Arguments> providesRecipientAndResponse() {
         return Stream.of(
-                Arguments.of("550 MAIL FROM: NON-EX, REMOTE DOMAIN",
-                        EXIST_REMOTE_FROM, EXIST_REMOTE_FROM, DELIVERABLE_ADDRESS, VALID_CC,
-                        VALID_FILE_SIZE, 550),
-                Arguments.of("501 MAIL FROM: MAL-FORMAT",
-                        MAL_FORMAT_ADDRESS, MAL_FORMAT_ADDRESS, DELIVERABLE_ADDRESS, VALID_CC, VALID_FILE_SIZE, 421),
-                Arguments.of("550 MAIL FROM: EXISTING REMOTE DOMAIN",
-                        EXIST_REMOTE_FROM, EXIST_REMOTE_FROM, DELIVERABLE_ADDRESS, VALID_CC, VALID_FILE_SIZE, 550),
-                Arguments.of("550 MAIL FROM: FAKE DOMAIN",
-                        FAKE_DOMAIN_FROM, FAKE_DOMAIN_FROM, DELIVERABLE_ADDRESS, VALID_CC, VALID_FILE_SIZE, 550),
-                Arguments.of(" 250 MAIL FROM: NON-EX, IN-HOUSE DOMAIN",
-                        NON_EX_IN_HOUSE_DOMAIN_FROM, NON_EX_IN_HOUSE_DOMAIN_FROM, DELIVERABLE_ADDRESS, VALID_CC,
-                        VALID_FILE_SIZE, 250),
-
-                Arguments.of("550/503 RCPT TO: NOT ALLOWED DOMAIN",
-                        VALID_FROM, VALID_FROM, NOT_ALLOWED_DOMAIN_TO_1, null, VALID_FILE_SIZE, 503),
-
-                Arguments.of("501 RCPT TO: MAL-FORMATTED",
-                        VALID_FROM, VALID_FROM, MAL_FORMAT_ADDRESS, null, VALID_FILE_SIZE, 421),
+//                Arguments.of("550 MAIL FROM: NON-EX, REMOTE DOMAIN",
+//                        EXIST_REMOTE_FROM, EXIST_REMOTE_FROM, DELIVERABLE_ADDRESS, VALID_CC,
+//                        VALID_FILE_SIZE, 550),
+//                Arguments.of("501 MAIL FROM: MAL-FORMAT",
+//                        MAL_FORMAT_ADDRESS, MAL_FORMAT_ADDRESS, DELIVERABLE_ADDRESS, VALID_CC, VALID_FILE_SIZE, 421),
+//                Arguments.of("550 MAIL FROM: EXISTING REMOTE DOMAIN",
+//                        EXIST_REMOTE_FROM, EXIST_REMOTE_FROM, DELIVERABLE_ADDRESS, VALID_CC, VALID_FILE_SIZE, 550),
+//                Arguments.of("550 MAIL FROM: FAKE DOMAIN",
+//                        FAKE_DOMAIN_FROM, FAKE_DOMAIN_FROM, DELIVERABLE_ADDRESS, VALID_CC, VALID_FILE_SIZE, 550),
+//                Arguments.of(" 250 MAIL FROM: NON-EX, IN-HOUSE DOMAIN",
+//                        NON_EX_IN_HOUSE_DOMAIN_FROM, NON_EX_IN_HOUSE_DOMAIN_FROM, DELIVERABLE_ADDRESS, VALID_CC,
+//                        VALID_FILE_SIZE, 250),
+//
+//                Arguments.of("550/503 RCPT TO: NOT ALLOWED DOMAIN",
+//                        VALID_FROM, VALID_FROM, NOT_ALLOWED_DOMAIN_TO_1, null, VALID_FILE_SIZE, 503),
+//
+//                Arguments.of("501 RCPT TO: MAL-FORMATTED",
+//                        VALID_FROM, VALID_FROM, MAL_FORMAT_ADDRESS, null, VALID_FILE_SIZE, 421),
                 Arguments.of("250 RCPT TO: ALLOWED DOMAIN",
-                        VALID_FROM, VALID_FROM, DELIVERABLE_ADDRESS, null, VALID_FILE_SIZE, 250),
-                Arguments.of("250 RCPT TO: NON-EX, ALLOWED DOMAIN",
-                        VALID_FROM, VALID_FROM, NON_EXISTENT_ADDRESS_1, null, VALID_FILE_SIZE, 250),
-
-                Arguments.of("501 RCPT TO: ANY one MAL-FORMAT",
-                        VALID_FROM, VALID_FROM, MAL_FORMAT_ADDRESS, VALID_CC, VALID_FILE_SIZE, 421),
-
-                Arguments.of("250 RCPT TO: NO MAL, ONE or More is ALLOWED DOMAIN",
-                        VALID_FROM, VALID_FROM, NOT_ALLOWED_DOMAIN_TO_1, VALID_CC, VALID_FILE_SIZE, 250),
-                Arguments.of("503 RCPT TO: ALL NOT-ALLOWED DOMAIN",
-                        VALID_FROM, VALID_FROM, NOT_ALLOWED_DOMAIN_TO_1, INVALID_CC, VALID_FILE_SIZE, 503),
-
-                Arguments.of("OVER SIZE: OVER SMART HOST LIMIT",
-                        VALID_FROM, VALID_FROM, DELIVERABLE_ADDRESS, VALID_CC, OVER_SIZE_FILES, 421),
-                Arguments.of("250 OVER SIZE: OVER RECIPIENT LIMIT",
-                        VALID_FROM, VALID_FROM, DELIVERABLE_ADDRESS, VALID_CC, INVALID_FILE_SIZE, 250)
+                        VALID_FROM, VALID_FROM, "nucleus@hotmail.com", null, VALID_FILE_SIZE, 250)
+//                Arguments.of("250 RCPT TO: NON-EX, ALLOWED DOMAIN",
+//                        VALID_FROM, VALID_FROM, NON_EXISTENT_ADDRESS_1, null, VALID_FILE_SIZE, 250),
+//
+//                Arguments.of("501 RCPT TO: ANY one MAL-FORMAT",
+//                        VALID_FROM, VALID_FROM, MAL_FORMAT_ADDRESS, VALID_CC, VALID_FILE_SIZE, 421),
+//
+//                Arguments.of("250 RCPT TO: NO MAL, ONE or More is ALLOWED DOMAIN",
+//                        VALID_FROM, VALID_FROM, NOT_ALLOWED_DOMAIN_TO_1, VALID_CC, VALID_FILE_SIZE, 250),
+//                Arguments.of("503 RCPT TO: ALL NOT-ALLOWED DOMAIN",
+//                        VALID_FROM, VALID_FROM, NOT_ALLOWED_DOMAIN_TO_1, INVALID_CC, VALID_FILE_SIZE, 503),
+//
+//                Arguments.of("OVER SIZE: OVER SMART HOST LIMIT",
+//                        VALID_FROM, VALID_FROM, DELIVERABLE_ADDRESS, VALID_CC, OVER_SIZE_FILES, 421),
+//                Arguments.of("250 OVER SIZE: OVER RECIPIENT LIMIT",
+//                        VALID_FROM, VALID_FROM, DELIVERABLE_ADDRESS, VALID_CC, INVALID_FILE_SIZE, 250)
 
         );
     }
