@@ -3,7 +3,6 @@ package com.lawrence.greenmail;
 import io.restassured.RestAssured;
 import io.restassured.http.ContentType;
 import io.vertx.core.json.JsonObject;
-import jakarta.mail.MessagingException;
 
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
@@ -16,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Stream;
 
@@ -105,9 +103,9 @@ class GreenMailIT {
     }
 
     @Test
-    void testCarbonio() throws MessagingException, IOException {
-        MailValidator validator = new MailValidator();
-        validator.getEmails();
+    @org.junit.jupiter.api.condition.EnabledIfEnvironmentVariable(named = "SMOKE_IMAP_SUBJECT", matches = ".+")
+    void testCarbonio() throws Exception {
+        MailValidator.main(new String[] {System.getenv("SMOKE_IMAP_SUBJECT")});
     }
 
     private static Stream<Arguments> providesRecipientAndResponse() {
