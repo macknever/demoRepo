@@ -1,6 +1,7 @@
 package com.lawrence.greenmail.util;
 
 import java.time.Duration;
+import java.util.List;
 
 import com.google.inject.Guice;
 import com.google.inject.Inject;
@@ -21,19 +22,14 @@ class MailValidatorIT {
     }
 
     @Test
-    void receivesEmailWithExpectedAttachment() throws Exception {
-        String subject = requiredEnvironment("SMOKE_IMAP_SUBJECT");
-        String attachmentName = requiredEnvironment("SMOKE_IMAP_ATTACHMENT");
+    void receivesEmailWithExpectedBodyAndAttachments() throws Exception {
+        // Set these to the report you send before running this mailbox validation test.
+        String subject = "Smoke report 8f8ca5a1-63b0-44c4-a21d-0cf330e900be";
+        String expectedBody = "The smoke test report is attached.";
+        List<String> expectedAttachments = List.of("report.zip", "details.txt");
         try (var client = clientProvider.get()) {
-            new MailValidator(client).validate(subject, attachmentName, Duration.ofSeconds(60));
+            new MailValidator(client).validate(subject, expectedBody, expectedAttachments, Duration.ofSeconds(60));
         }
     }
 
-    private static String requiredEnvironment(String name) {
-        String value = System.getenv(name);
-        if (value == null || value.isBlank()) {
-            throw new IllegalArgumentException("Set " + name + " before running this test");
-        }
-        return value;
-    }
 }

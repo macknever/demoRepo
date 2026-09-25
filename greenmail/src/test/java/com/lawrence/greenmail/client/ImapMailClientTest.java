@@ -64,6 +64,8 @@ class ImapMailClientTest {
         var content = ImapMailClient.readContent(message(raw));
         assertThat(content.subject()).isEqualTo("smoke-123");
         assertThat(content.attachmentNames()).containsExactly("notes.txt");
+        assertThat(content.text()).contains("Description: smoke-123")
+                .doesNotContain("attachment-only-marker", "<p>");
     }
 
     @Test

@@ -1,25 +1,24 @@
 # Validate mailbox delivery with JUnit
 
 `ImapMailClient` reads mail using IMAPS (implicit TLS). `MailValidator` waits for
-an exact subject and checks that the received email contains an attachment with
-an exact, case-sensitive filename. It does not send, delete, or mark mail read.
+an exact subject and checks that the same email contains the expected plain-text
+body substring and every expected attachment filename (case-sensitive). It does not send, delete, or mark mail read.
 Use a fresh UUID in the report subject to avoid matching an older message.
 
 ## Run from IntelliJ
 
 Open `src/test/java/com/lawrence/greenmail/util/MailValidatorIT.java` and create a
-JUnit run configuration for `receivesEmailWithExpectedAttachment` using the
+JUnit run configuration for `receivesEmailWithExpectedBodyAndAttachments` using the
 `greenmail` module. Under **Run → Edit Configurations → Environment variables**,
 set:
 
 ```text
 SMOKE_IMAP_PASSWORD=your-mailbox-password
-SMOKE_IMAP_SUBJECT=YOUR EXACT SUBJECT WITH UUID
-SMOKE_IMAP_ATTACHMENT=report.zip
 ```
 
-Send the report first, then run the test. It waits up to 60 seconds for delivery.
-An absent email or mismatched filename fails the test. Other attachments are
+Set `subject`, `expectedBody`, and `expectedAttachments` directly in the test
+method to match your report. Send the report first, then run the test. It waits up to 60 seconds for delivery.
+An absent email, mismatched body, or missing expected filename fails the test. Other attachments are
 allowed. No program arguments or main class are needed.
 
 Retrieve the password with your authenticated Secret Server CLI, then paste the
@@ -34,8 +33,6 @@ password or store it as a project file.
 | `SMOKE_IMAP_USERNAME` | `nucleus.uc@dev-globalrelay.net` |
 | `SMOKE_IMAP_PASSWORD` | Required |
 | `SMOKE_IMAP_FOLDER` | `INBOX` |
-| `SMOKE_IMAP_SUBJECT` | Required for the live test |
-| `SMOKE_IMAP_ATTACHMENT` | Required for the live test |
 
 Only IMAPS is supported. The client verifies the TLS server identity using the
 JVM trust store. Username/password authentication needs no explicit mechanism.
@@ -51,8 +48,6 @@ From the repository root, in an authenticated Secret Server shell:
   SMOKE_IMAP_PASSWORD="$(secretserver-tool --secret-id=YOUR_MAILBOX_SECRET_ID --field Password --get-field)"
   test -n "$SMOKE_IMAP_PASSWORD"
   export SMOKE_IMAP_PASSWORD
-  export SMOKE_IMAP_SUBJECT='YOUR EXACT SUBJECT WITH UUID'
-  export SMOKE_IMAP_ATTACHMENT='report.zip'
   mvn -pl greenmail -Dtest=MailValidatorIT test
 )
 ```
@@ -71,8 +66,11 @@ Each test owns its connection:
 
 ```java
 try (var client = clientProvider.get()) {
-    new MailValidator(client).validate(subject, "report.zip", Duration.ofSeconds(60));
+    new MailValidator(client).validate(subject, expectedBody,
+            List.of("report.zip", "details.txt"), Duration.ofSeconds(60));
 }
 ```
 
-Pass `null` for the filename to check only whether the exact subject arrived.
+Expected message content belongs in the test; environment variables configure
+only the mailbox connection. Body checks use decoded plain text, excluding
+attachments. HTML-only body validation is not supported.

@@ -107,23 +107,25 @@ public final class ImapMailClient implements AutoCloseable {
     }
 
     static EmailContent readContent(Message message) throws MessagingException, IOException {
+        StringBuilder text = new StringBuilder();
         List<String> attachments = new ArrayList<>();
-        readPart(message, attachments);
-        return new EmailContent(message.getSubject(), List.copyOf(attachments));
+        readPart(message, text, attachments);
+        return new EmailContent(message.getSubject(), text.toString(), List.copyOf(attachments));
     }
 
-    private static void readPart(Part part, List<String> attachments)
+    private static void readPart(Part part, StringBuilder text, List<String> attachments)
             throws MessagingException, IOException {
         String fileName = part.getFileName();
         if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || fileName != null) {
             if (fileName != null) {
                 attachments.add(MimeUtility.decodeText(fileName));
             }
-
+        } else if (part.isMimeType("text/plain")) {
+            text.append((String) part.getContent()).append('\n');
         } else if (part.isMimeType("multipart/*")) {
             Multipart multipart = (Multipart) part.getContent();
             for (int i = 0; i < multipart.getCount(); i++) {
-                readPart(multipart.getBodyPart(i), attachments);
+                readPart(multipart.getBodyPart(i), text, attachments);
             }
         }
     }
@@ -140,6 +142,6 @@ public final class ImapMailClient implements AutoCloseable {
         store.close();
     }
 
-    public record EmailContent(String subject, List<String> attachmentNames) {
+    public record EmailContent(String subject, String text, List<String> attachmentNames) {
     }
 }
