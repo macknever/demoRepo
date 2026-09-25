@@ -76,3 +76,9 @@ try (var client = clientProvider.get()) {
 Expected message content belongs in the test; environment variables configure
 only the mailbox connection. Body checks use decoded plain text, excluding
 attachments. HTML-only body validation is not supported.
+
+The logging server sends a plain-text body and named attachments with disposition
+`attachment`. The parser collects filenames independently of the attachment MIME
+type. A multipart containing only files produces an empty body, so a nonempty
+expected-body assertion fails. The demo `ReportEmailComposer` currently creates
+an unnamed attachment; use a message with named attachments for filename checks.

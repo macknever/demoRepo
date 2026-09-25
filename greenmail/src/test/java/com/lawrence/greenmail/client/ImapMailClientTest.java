@@ -69,6 +69,50 @@ class ImapMailClientTest {
     }
 
     @Test
+    void readsPlainTextAndNamedAttachmentsAsSentByLoggingServer() throws Exception {
+        var content = ImapMailClient.readContent(message(mixedMessage(true)));
+        assertThat(content.subject()).isEqualTo("smoke-server-format");
+        assertThat(content.text()).contains("Report body").doesNotContain("file contents");
+        assertThat(content.attachmentNames()).containsExactly("report.zip", "screenshot.png");
+    }
+
+    @Test
+    void readsFilesOnlyMultipartWithEmptyBody() throws Exception {
+        var content = ImapMailClient.readContent(message(mixedMessage(false)));
+        assertThat(content.text()).isEmpty();
+        assertThat(content.attachmentNames()).containsExactly("report.zip", "screenshot.png");
+    }
+
+    private static String mixedMessage(boolean includeBody) {
+        String headers = """
+                Subject: smoke-server-format
+                MIME-Version: 1.0
+                Content-Type: multipart/mixed; boundary=parts
+
+                """;
+        String body = includeBody ? """
+                --parts
+                Content-Type: text/plain; charset=UTF-8
+
+                Report body
+                """ : "";
+        return headers + body + """
+                --parts
+                Content-Type: application/zip
+                Content-Disposition: attachment; filename="report.zip"
+                Content-Transfer-Encoding: base64
+
+                UEsDBA==
+                --parts
+                Content-Type: image/png
+                Content-Disposition: attachment; filename="screenshot.png"
+
+                file contents
+                --parts--
+                """;
+    }
+
+    @Test
     void returnsEmptyNamesForEmailWithoutAttachments() throws Exception {
         var content = ImapMailClient.readContent(message("""
                 Subject: smoke-456
