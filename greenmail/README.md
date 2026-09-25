@@ -3,6 +3,8 @@
 `ImapMailClient` reads mail using IMAPS (implicit TLS). `MailValidator` waits for
 an exact subject and checks that the same email contains the expected plain-text
 body substring and every expected attachment filename (case-sensitive). It does not send, delete, or mark mail read.
+Polling uses a Failsafe retry policy bounded by the requested timeout. Only an
+absent matching email is retried; mail/IO errors fail immediately.
 Use a fresh UUID in the report subject to avoid matching an older message.
 
 ## Run from IntelliJ

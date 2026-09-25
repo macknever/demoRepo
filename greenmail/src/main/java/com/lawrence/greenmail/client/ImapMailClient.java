@@ -7,6 +7,10 @@ import java.util.List;
 import java.util.Objects;
 import java.util.Properties;
 
+import dev.failsafe.Failsafe;
+import dev.failsafe.FailsafeException;
+import dev.failsafe.RetryPolicy;
+
 import jakarta.mail.Folder;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -72,38 +76,53 @@ public final class ImapMailClient implements AutoCloseable {
         if (timeout.isNegative() || timeout.isZero() || pollInterval.isNegative() || pollInterval.isZero()) {
             throw new IllegalArgumentException("Timeout and poll interval must be positive");
         }
-        long started = System.nanoTime();
-        long timeoutNanos = timeout.toNanos();
-        do {
-            if (Thread.currentThread().isInterrupted()) {
-                throw new InterruptedException("Email polling interrupted");
+        RetryPolicy<EmailContent> retryPolicy = RetryPolicy.<EmailContent>builder()
+                .handleIf((result, failure) -> failure == null && result == null)
+                .withMaxAttempts(-1)
+                .withMaxDuration(timeout)
+                .withDelayFn(event -> pollInterval)
+                .build();
+        try {
+            EmailContent email = Failsafe.with(retryPolicy).get(() -> findEmail(subject));
+            if (email == null) {
+                throw new IOException("Timed out waiting for email with subject: " + subject);
             }
-            // Reopen each poll so newly delivered messages are visible without relying on cached counts.
-            Folder folder = store.getFolder(folderName);
-            try {
-                folder.open(Folder.READ_ONLY);
-                for (Message message : folder.search(new SubjectTerm(subject))) {
-                    if (subject.equals(message.getSubject())) {
-                        return readContent(message);
-                    }
-                }
-            } finally {
-                if (folder.isOpen()) {
-                    folder.close(false);
-                }
-            }
-            long remaining = timeoutNanos - (System.nanoTime() - started);
-            if (remaining <= 0) {
-                break;
-            }
-            try {
-                Thread.sleep(Duration.ofNanos(Math.min(remaining, pollInterval.toNanos())));
-            } catch (InterruptedException interrupted) {
+            return email;
+        } catch (FailsafeException failure) {
+            // Preserve the client's checked-exception API rather than exposing library wrappers.
+            if (failure.getCause() instanceof InterruptedException interrupted) {
                 Thread.currentThread().interrupt();
                 throw interrupted;
             }
-        } while (System.nanoTime() - started < timeoutNanos);
-        throw new IOException("Timed out waiting for email with subject: " + subject);
+            if (failure.getCause() instanceof MessagingException messaging) {
+                throw messaging;
+            }
+            if (failure.getCause() instanceof IOException io) {
+                throw io;
+            }
+            throw failure;
+        }
+    }
+
+    private EmailContent findEmail(String subject) throws MessagingException, IOException, InterruptedException {
+        if (Thread.currentThread().isInterrupted()) {
+            throw new InterruptedException("Email polling interrupted");
+        }
+        // Reopen each attempt so newly delivered messages are visible.
+        Folder folder = store.getFolder(folderName);
+        try {
+            folder.open(Folder.READ_ONLY);
+            for (Message message : folder.search(new SubjectTerm(subject))) {
+                if (subject.equals(message.getSubject())) {
+                    return readContent(message);
+                }
+            }
+            return null;
+        } finally {
+            if (folder.isOpen()) {
+                folder.close(false);
+            }
+        }
     }
 
     static EmailContent readContent(Message message) throws MessagingException, IOException {

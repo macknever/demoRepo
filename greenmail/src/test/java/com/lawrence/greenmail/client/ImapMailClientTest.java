@@ -116,6 +116,43 @@ class ImapMailClientTest {
         verify(store).close();
     }
 
+    @Test
+    void doesNotRetryProtocolFailures() throws Exception {
+        Store store = mock(Store.class);
+        Folder folder = mock(Folder.class);
+        when(store.getFolder("INBOX")).thenReturn(folder);
+        when(folder.isOpen()).thenReturn(true);
+        var failure = new jakarta.mail.MessagingException("Mailbox unavailable");
+        when(folder.search(any(SearchTerm.class))).thenThrow(failure);
+        try (var client = new ImapMailClient(store, "INBOX")) {
+            assertThatThrownBy(() -> client.awaitEmail("smoke", Duration.ofSeconds(1), Duration.ofMillis(1)))
+                    .isSameAs(failure);
+        }
+        verify(folder, times(1)).search(any(SearchTerm.class));
+        verify(folder).close(false);
+    }
+
+    @Test
+    void preservesInterruptionDuringRetryDelay() throws Exception {
+        Store store = mock(Store.class);
+        Folder folder = mock(Folder.class);
+        when(store.getFolder("INBOX")).thenReturn(folder);
+        when(folder.isOpen()).thenReturn(true);
+        when(folder.search(any(SearchTerm.class))).thenAnswer(invocation -> {
+            Thread.currentThread().interrupt();
+            return new Message[0];
+        });
+        try (var client = new ImapMailClient(store, "INBOX")) {
+            assertThatThrownBy(() -> client.awaitEmail("smoke", Duration.ofSeconds(1), Duration.ofMillis(10)))
+                    .isInstanceOf(InterruptedException.class);
+            assertThat(Thread.currentThread().isInterrupted()).isTrue();
+        } finally {
+            Thread.interrupted();
+        }
+        verify(folder, times(1)).search(any(SearchTerm.class));
+        verify(folder).close(false);
+    }
+
     private static MimeMessage message(String raw) throws Exception {
         return new MimeMessage(Session.getInstance(new Properties()),
                 new ByteArrayInputStream(raw.replace("\n", "\r\n").getBytes(StandardCharsets.UTF_8)));
