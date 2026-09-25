@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
 
@@ -134,17 +135,23 @@ public final class ImapMailClient implements AutoCloseable {
 
     private static void readPart(Part part, StringBuilder text, List<String> attachments)
             throws MessagingException, IOException {
-        String fileName = part.getFileName();
-        if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || fileName != null) {
-            if (fileName != null) {
-                attachments.add(MimeUtility.decodeText(fileName));
+        String disposition = part.getDisposition();
+        switch (disposition == null ? "" : disposition.toLowerCase(Locale.ROOT)) {
+            case Part.ATTACHMENT -> {
+                String fileName = part.getFileName();
+                if (fileName != null) {
+                    attachments.add(MimeUtility.decodeText(fileName));
+                }
             }
-        } else if (part.isMimeType("text/plain")) {
-            text.append((String) part.getContent()).append('\n');
-        } else if (part.isMimeType("multipart/*")) {
-            Multipart multipart = (Multipart) part.getContent();
-            for (int i = 0; i < multipart.getCount(); i++) {
-                readPart(multipart.getBodyPart(i), text, attachments);
+            default -> {
+                if (part.isMimeType("text/plain")) {
+                    text.append((String) part.getContent()).append('\n');
+                } else if (part.isMimeType("multipart/*")) {
+                    Multipart multipart = (Multipart) part.getContent();
+                    for (int i = 0; i < multipart.getCount(); i++) {
+                        readPart(multipart.getBodyPart(i), text, attachments);
+                    }
+                }
             }
         }
     }
