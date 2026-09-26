@@ -25,6 +25,19 @@ import jakarta.mail.internet.MimeMessage;
 
 class ImapMailClientTest {
     @Test
+    void removesTrailingLineEndingsWithoutTrimmingBodyWhitespace() throws Exception {
+        for (String ending : new String[] {"", "\n", "\r\n", "\r\n\r\n"}) {
+            var message = new MimeMessage(Session.getInstance(new Properties()));
+            message.setSubject("smoke-test");
+            message.setText("  First line\nSecond line  " + ending, "UTF-8");
+            message.saveChanges();
+
+            assertThat(ImapMailClient.readContent(message).text())
+                    .isEqualTo("  First line\nSecond line  ");
+        }
+    }
+
+    @Test
     void usesImapsProperties() {
         assertThat(ImapMailClient.mailProperties())
                 .containsEntry("mail.imaps.ssl.checkserveridentity", "true")

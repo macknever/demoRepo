@@ -130,7 +130,9 @@ public final class ImapMailClient implements AutoCloseable {
         StringBuilder text = new StringBuilder();
         List<String> attachments = new ArrayList<>();
         readPart(message, text, attachments);
-        return new EmailContent(message.getSubject(), text.toString(), List.copyOf(attachments));
+        // Remove trailing line endings while preserving spaces and line breaks within the body.
+        String body = text.toString().replaceFirst("[\\r\\n]+$", "");
+        return new EmailContent(message.getSubject(), body, List.copyOf(attachments));
     }
 
     private static void readPart(Part part, StringBuilder text, List<String> attachments)
