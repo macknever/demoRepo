@@ -26,6 +26,30 @@ import jakarta.mail.internet.MimeMessage;
 
 class ImapMailClientTest {
     @Test
+    void limitsEachAttachmentPreviewToTwentyDecodedBytes() throws Exception {
+        var part = mock(jakarta.mail.Part.class);
+        when(part.getAllHeaders()).thenReturn(java.util.Collections.emptyEnumeration());
+        when(part.getDisposition()).thenReturn(jakarta.mail.Part.ATTACHMENT);
+        byte[] bytes = new byte[100];
+        java.util.Arrays.fill(bytes, (byte) 0x41);
+        var input = new ByteArrayInputStream(bytes);
+        when(part.getInputStream()).thenReturn(input);
+
+        String preview = ImapMailClient.mimePreview(part);
+
+        assertThat(preview).contains("20 bytes, hex; maximum 20 bytes")
+                .contains("41".repeat(20)).doesNotContain("41".repeat(21));
+        assertThat(input.available()).isEqualTo(80);
+    }
+
+    @Test
+    void previewsShortAttachmentsAndPreservesBody() throws Exception {
+        String preview = ImapMailClient.mimePreview(message(mixedMessage(true)));
+        assertThat(preview).contains("Report body", "report.zip", "screenshot.png")
+                .contains("4 bytes, hex", "504b0304");
+    }
+
+    @Test
     void returnsNewestExactSubjectMatchRegardlessOfSearchResultOrder() throws Exception {
         Store store = mock(Store.class);
         Folder folder = mock(Folder.class);

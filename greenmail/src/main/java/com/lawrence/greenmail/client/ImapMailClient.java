@@ -1,13 +1,12 @@
 package com.lawrence.greenmail.client;
 
 import java.io.IOException;
-import java.io.ByteArrayOutputStream;
-import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
 import java.util.List;
+import java.util.HexFormat;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
@@ -140,11 +139,9 @@ public final class ImapMailClient implements AutoCloseable {
                 if (subject.equals(message.getSubject())) {
                     LOG.info("Exact subject matched; reading body and attachment names");
                     if (Boolean.getBoolean("smoke.imap.logRaw")) {
-                        LOG.info("Reading full raw MIME message, including attachment payloads");
-                        var raw = new ByteArrayOutputStream();
-                        message.writeTo(raw);
-                        LOG.info("Raw email:\n{}", raw.toString(StandardCharsets.UTF_8));
-                        LOG.info("Raw MIME logging complete");
+                        LOG.info("Reading MIME preview; attachment previews limited to 20 bytes each");
+                        LOG.info("Email MIME preview:\n{}", mimePreview(message));
+                        LOG.info("MIME preview logging complete");
                     }
                     EmailContent email = readContent(message);
                     LOG.info("Email parsed: {} body characters, {} attachments",
@@ -159,6 +156,42 @@ public final class ImapMailClient implements AutoCloseable {
                 folder.close(false);
                 LOG.info("Mailbox folder closed");
             }
+        }
+    }
+
+    /** Diagnostic representation, not a wire-format copy of the message. */
+    static String mimePreview(Part part) throws MessagingException, IOException {
+        StringBuilder preview = new StringBuilder();
+        appendMimePreview(part, preview);
+        return preview.toString();
+    }
+
+    private static void appendMimePreview(Part part, StringBuilder preview)
+            throws MessagingException, IOException {
+        var headers = part.getAllHeaders();
+        while (headers.hasMoreElements()) {
+            var header = headers.nextElement();
+            preview.append(header.getName()).append(": ").append(header.getValue()).append('\n');
+        }
+        preview.append('\n');
+        if (Part.ATTACHMENT.equalsIgnoreCase(part.getDisposition()) || part.getFileName() != null) {
+            // Read only the preview, without serializing the full attachment into memory.
+            try (var input = part.getInputStream()) {
+                byte[] bytes = input.readNBytes(20);
+                preview.append("[Attachment preview: ").append(bytes.length)
+                        .append(" bytes, hex; maximum 20 bytes]\n")
+                        .append(HexFormat.of().formatHex(bytes)).append('\n');
+            }
+        } else if (part.isMimeType("multipart/*")) {
+            Multipart multipart = (Multipart) part.getContent();
+            for (int i = 0; i < multipart.getCount(); i++) {
+                preview.append("--- MIME part ").append(i + 1).append(" ---\n");
+                appendMimePreview(multipart.getBodyPart(i), preview);
+            }
+        } else if (part.isMimeType("text/*")) {
+            preview.append(part.getContent()).append('\n');
+        } else {
+            preview.append("[Non-text content omitted]\n");
         }
     }
 

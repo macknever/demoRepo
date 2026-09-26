@@ -90,12 +90,13 @@ and cleanup. Repeated retry messages mean the exact subject has not been found.
 The delivery timeout bounds retries, not an individual in-flight mail operation;
 the socket read timeout limits inactivity, not total transfer time.
 
-To log the full raw MIME message in IntelliJ, add the VM option
-`-Dsmoke.imap.logRaw=true`. This is off by default. It downloads and logs complete
-attachment payloads and private message content, so a large attachment can make
-it slow and produce a large console output. The message is logged only after an
+To log a MIME preview in IntelliJ, add the VM option
+`-Dsmoke.imap.logRaw=true`. This is off by default. It logs headers and text bodies, plus only the first
+20 decoded bytes of each attachment in hexadecimal. This is a diagnostic preview,
+not the original raw MIME serialization. Mail providers may buffer more than
+20 bytes during network reads. The preview still contains private message content. The message is logged only after an
 exact subject match. The progress messages immediately before and after this
-operation identify whether raw serialization is the slow step.
+operation identify whether preview generation is the slow step.
 
 When several emails have the exact subject, the client returns only the one with
 the highest mailbox sequence number (most recently appended to the folder). It
