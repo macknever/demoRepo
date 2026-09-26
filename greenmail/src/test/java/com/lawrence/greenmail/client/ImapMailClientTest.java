@@ -5,6 +5,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.atLeastOnce;
 import static org.mockito.Mockito.mock;
+import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -24,6 +25,30 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.MimeMessage;
 
 class ImapMailClientTest {
+    @Test
+    void returnsNewestExactSubjectMatchRegardlessOfSearchResultOrder() throws Exception {
+        Store store = mock(Store.class);
+        Folder folder = mock(Folder.class);
+        when(store.getFolder("INBOX")).thenReturn(folder);
+        when(folder.isOpen()).thenReturn(true);
+        Message older = spy(message("Subject: smoke-test\n\nolder body"));
+        Message newest = spy(message("Subject: smoke-test\n\nnewest body"));
+        Message partial = spy(message("Subject: prefix smoke-test\n\nwrong subject"));
+        when(older.getMessageNumber()).thenReturn(10);
+        when(newest.getMessageNumber()).thenReturn(20);
+        when(partial.getMessageNumber()).thenReturn(30);
+        when(folder.search(any(SearchTerm.class)))
+                .thenReturn(new Message[] {newest, partial, older});
+
+        try (var client = new ImapMailClient(store, "INBOX")) {
+            var result = client.awaitEmail("smoke-test", Duration.ofSeconds(1), Duration.ofMillis(1));
+            assertThat(result.text()).isEqualTo("newest body");
+        }
+        verify(folder, times(1)).search(any(SearchTerm.class));
+        verify(folder).close(false);
+        verify(store).close();
+    }
+
     @Test
     void removesTrailingLineEndingsWithoutTrimmingBodyWhitespace() throws Exception {
         for (String ending : new String[] {"", "\n", "\r\n", "\r\n\r\n"}) {

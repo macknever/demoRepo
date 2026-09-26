@@ -96,3 +96,8 @@ attachment payloads and private message content, so a large attachment can make
 it slow and produce a large console output. The message is logged only after an
 exact subject match. The progress messages immediately before and after this
 operation identify whether raw serialization is the slow step.
+
+When several emails have the exact subject, the client returns only the one with
+the highest mailbox sequence number (most recently appended to the folder). It
+does not use the sender's Date header. Body and attachment assertions apply only
+to that message, with no fallback to an older match.

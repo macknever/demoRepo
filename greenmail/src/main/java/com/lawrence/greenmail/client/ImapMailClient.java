@@ -5,6 +5,8 @@ import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
@@ -132,6 +134,8 @@ public final class ImapMailClient implements AutoCloseable {
             LOG.info("Searching mailbox by subject");
             Message[] matches = folder.search(new SubjectTerm(subject));
             LOG.info("Subject search returned {} candidates", matches.length);
+            // Highest mailbox sequence number is the most recently appended message.
+            Arrays.sort(matches, Comparator.comparingInt(Message::getMessageNumber).reversed());
             for (Message message : matches) {
                 if (subject.equals(message.getSubject())) {
                     LOG.info("Exact subject matched; reading body and attachment names");
