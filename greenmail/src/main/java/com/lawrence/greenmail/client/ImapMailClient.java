@@ -1,6 +1,8 @@
 package com.lawrence.greenmail.client;
 
 import java.io.IOException;
+import java.io.ByteArrayOutputStream;
+import java.nio.charset.StandardCharsets;
 import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
@@ -53,7 +55,9 @@ public final class ImapMailClient implements AutoCloseable {
         }
         store = Session.getInstance(mailProperties()).getStore("imaps");
         try {
+            LOG.info("Connecting to IMAPS server {}:{}", host, port);
             store.connect(host, port, username, password);
+            LOG.info("IMAPS connection established");
         } catch (MessagingException failure) {
             try {
                 store.close();
@@ -88,10 +92,12 @@ public final class ImapMailClient implements AutoCloseable {
         }
         RetryPolicy<EmailContent> retryPolicy = RetryPolicy.<EmailContent>builder()
                 .handleIf((result, failure) -> failure == null && result == null)
+                .onRetry(event -> LOG.info("Matching email not received yet; retry attempt {}", event.getAttemptCount()))
                 .withMaxAttempts(-1)
                 .withMaxDuration(timeout)
                 .withDelayFn(event -> pollInterval)
                 .build();
+        LOG.info("Waiting up to {} for an exact subject match", timeout);
         try {
             EmailContent email = Failsafe.with(retryPolicy).get(() -> findEmail(subject));
             if (email == null) {
@@ -121,16 +127,33 @@ public final class ImapMailClient implements AutoCloseable {
         // Reopen each attempt so newly delivered messages are visible.
         Folder folder = store.getFolder(folderName);
         try {
+            LOG.info("Opening mailbox folder {}", folderName);
             folder.open(Folder.READ_ONLY);
-            for (Message message : folder.search(new SubjectTerm(subject))) {
+            LOG.info("Searching mailbox by subject");
+            Message[] matches = folder.search(new SubjectTerm(subject));
+            LOG.info("Subject search returned {} candidates", matches.length);
+            for (Message message : matches) {
                 if (subject.equals(message.getSubject())) {
-                    return readContent(message);
+                    LOG.info("Exact subject matched; reading body and attachment names");
+                    if (Boolean.getBoolean("smoke.imap.logRaw")) {
+                        LOG.info("Reading full raw MIME message, including attachment payloads");
+                        var raw = new ByteArrayOutputStream();
+                        message.writeTo(raw);
+                        LOG.info("Raw email:\n{}", raw.toString(StandardCharsets.UTF_8));
+                        LOG.info("Raw MIME logging complete");
+                    }
+                    EmailContent email = readContent(message);
+                    LOG.info("Email parsed: {} body characters, {} attachments",
+                            email.text().length(), email.attachmentNames().size());
+                    return email;
                 }
             }
             return null;
         } finally {
             if (folder.isOpen()) {
+                LOG.info("Closing mailbox folder");
                 folder.close(false);
+                LOG.info("Mailbox folder closed");
             }
         }
     }
@@ -176,7 +199,9 @@ public final class ImapMailClient implements AutoCloseable {
 
     @Override
     public void close() throws MessagingException {
+        LOG.info("Closing IMAPS connection");
         store.close();
+        LOG.info("IMAPS connection closed");
     }
 
     public record EmailContent(String subject, String text, List<String> attachmentNames) {

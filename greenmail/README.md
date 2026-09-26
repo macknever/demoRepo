@@ -82,3 +82,17 @@ The logging server sends a plain-text body and named attachments with dispositio
 type. A multipart containing only files produces an empty body, so a nonempty
 expected-body assertion fails. The demo `ReportEmailComposer` currently creates
 an unnamed attachment; use a message with named attachments for filename checks.
+
+## Diagnose a slow run
+
+Progress logs identify connection, folder opening, subject search, content reading,
+and cleanup. Repeated retry messages mean the exact subject has not been found.
+The delivery timeout bounds retries, not an individual in-flight mail operation;
+the socket read timeout limits inactivity, not total transfer time.
+
+To log the full raw MIME message in IntelliJ, add the VM option
+`-Dsmoke.imap.logRaw=true`. This is off by default. It downloads and logs complete
+attachment payloads and private message content, so a large attachment can make
+it slow and produce a large console output. The message is logged only after an
+exact subject match. The progress messages immediately before and after this
+operation identify whether raw serialization is the slow step.
