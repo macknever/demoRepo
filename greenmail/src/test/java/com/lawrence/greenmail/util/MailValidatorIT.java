@@ -24,9 +24,9 @@ class MailValidatorIT {
     @Test
     void receivesEmailWithExpectedBodyAndAttachments() throws Exception {
         // Set these to the report you send before running this mailbox validation test.
-        String subject = "Smoke report 8f8ca5a1-63b0-44c4-a21d-0cf330e900be";
-        String expectedBody = "The smoke test report is attached.";
-        List<String> expectedAttachments = List.of("report.zip", "details.txt");
+        String subject = "Alert: try to submit issue with a 20mb file";
+        String expectedBody = "Category";
+        List<String> expectedAttachments = List.of("maxSize20mb.tiff");
         try (var client = clientProvider.get()) {
             new MailValidator(client).validate(subject, expectedBody, expectedAttachments, Duration.ofSeconds(60));
         }

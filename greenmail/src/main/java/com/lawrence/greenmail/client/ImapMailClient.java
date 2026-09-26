@@ -7,11 +7,14 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Objects;
 import java.util.Properties;
+import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import dev.failsafe.Failsafe;
 import dev.failsafe.FailsafeException;
 import dev.failsafe.RetryPolicy;
-
 import jakarta.mail.Folder;
 import jakarta.mail.Message;
 import jakarta.mail.MessagingException;
@@ -22,17 +25,23 @@ import jakarta.mail.Store;
 import jakarta.mail.internet.MimeUtility;
 import jakarta.mail.search.SubjectTerm;
 
-/** Read-only IMAPS client. Reading mail never marks it seen or deletes it. */
+/**
+ * Read-only IMAPS client. Reading mail never marks it seen or deletes it.
+ */
 public final class ImapMailClient implements AutoCloseable {
+    private static final Pattern END_CRLF = Pattern.compile("[\\r\\n]+$");
     private final Store store;
     private final String folderName;
+    private static final Logger LOG = LoggerFactory.getLogger(ImapMailClient.class);
 
     ImapMailClient(Store store, String folderName) {
         this.store = Objects.requireNonNull(store);
         this.folderName = requireText(folderName, "folderName");
     }
 
-    /** Connect using IMAPS and mailbox credentials. */
+    /**
+     * Connect using IMAPS and mailbox credentials.
+     */
     public ImapMailClient(String host, int port, String username, String password,
             String folderName) throws MessagingException {
         this.folderName = requireText(folderName, "folderName");
@@ -131,7 +140,7 @@ public final class ImapMailClient implements AutoCloseable {
         List<String> attachments = new ArrayList<>();
         readPart(message, text, attachments);
         // Remove trailing line endings while preserving spaces and line breaks within the body.
-        String body = text.toString().replaceFirst("[\\r\\n]+$", "");
+        String body = END_CRLF.matcher(text.toString()).replaceFirst("");
         return new EmailContent(message.getSubject(), body, List.copyOf(attachments));
     }
 
